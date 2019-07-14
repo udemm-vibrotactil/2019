@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <alsa/asoundlib.h>
 	      
-main (int argc, char *argv[])
+void main (int argc, char *argv[])
 {
   int i;
   int err;
@@ -33,7 +33,8 @@ main (int argc, char *argv[])
   snd_pcm_hw_params_t *hw_params;
 	snd_pcm_format_t format = SND_PCM_FORMAT_S16_LE;
 
-  if ((err = snd_pcm_open (&capture_handle, argv[1], SND_PCM_STREAM_CAPTURE, 0)) < 0) {
+//  if ((err = snd_pcm_open (&capture_handle, "hw:0", SND_PCM_STREAM_CAPTURE, 0)) < 0) {
+ if ((err = snd_pcm_open (&capture_handle, argv[1], SND_PCM_STREAM_CAPTURE, 0)) < 0) {
     fprintf (stderr, "cannot open audio device %s (%s)\n", 
              argv[1],
              snd_strerror (err));
