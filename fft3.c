@@ -1,5 +1,7 @@
 /***
 Ejemplo basado en FFT.c, usando 2 FFT con OpenMP
+compilar con
+gcc -O3 fft3.c kiss_fft.c -o fft -lpulse -lstdc++ -lpulse-simple -lm -fopenmp
 ***/
 #include <stdio.h>
 #include <unistd.h>

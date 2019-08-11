@@ -1,3 +1,6 @@
+//Compilar con
+//gcc audio_volume2.c -o audio_volume2 -lpulse -lstdc++ -lpulse-simple
+
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>

@@ -1,3 +1,6 @@
+//Compilar con
+//gcc fft.c kiss_fft.c -o fft -lpulse -lstdc++ -lpulse-simple -lm
+
 /***
   this program works on Linux Debian 9.7 with PulseAudio
   and is derived from:
@@ -74,7 +77,10 @@ static float find_max(kiss_fft_cpx * cx_out, int size, int sampling_freq) {
 
 	// ANSI/VT100 Terminal Control Escape Sequences
 	// http://www.termsys.demon.co.uk/vtansi.htm
-	printf("%5d#  \033[32m  MAX_FREQ=%5d \033[30m  VALUE=%.0f\r", counter++, max_freq, max);
+//	printf("%5d#  \033[32m  MAX_FREQ=%5d \033[30m  VALUE=%.0f\r", counter++, max_freq, max);
+	printf("%5d#  MAX_FREQ=%5d  VALUE=%.0f\n", counter++, max_freq, max);
+
+
 
 	return max_freq;
 }

@@ -1,5 +1,7 @@
 //Ejemplo de aplicacion de un filtro pasa Bajos con Fc a 5kHz
 //Tambien utilizo FILES para la guarda del archivo
+//Compilar con
+//gcc filter.c -o filter -lpulse -lstdc++ -lpulse-simple
 
 #include <stdio.h>
 #include <stdlib.h> //Necesario para usar FILES
@@ -41,7 +43,7 @@ static const double h[N] =
     8.047440128986703E-4,
 };
 
-short filter(const double x_in) //devuelvo short que es 16bits signed
+float filter(const double x_in) //devuelvo short que es 16bits signed
 {
     static int n = 0;
     static double x[N];
@@ -69,7 +71,8 @@ short filter(const double x_in) //devuelvo short que es 16bits signed
 int main(int argc, char*argv[]) {
     /* Especifico las caracteristicas del SAMPLE */
     static const pa_sample_spec ss = {
-        .format = PA_SAMPLE_S16LE,
+//        .format = PA_SAMPLE_S16LE,
+        .format = PA_SAMPLE_FLOAT32LE,
         .rate = 44100,
         .channels = 1
     };
@@ -90,7 +93,9 @@ int main(int argc, char*argv[]) {
 
 //ÃLoop para leer
     for (;;) {
-	int16_t buf2[BUFSIZE2]; //Creo el array para le buffer
+//	int16_t buf2[BUFSIZE2]; //Creo el array para le buffer
+	float buf2[BUFSIZE2]; //Creo el array para le buffer
+
 	int i;
         /* Record some data ... */
         if (pa_simple_read(s, buf2, sizeof(buf2), &error) < 0) {
