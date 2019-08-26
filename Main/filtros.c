@@ -1,6 +1,8 @@
 //Modulo de Filtros
 //Los Filtros son pasa banda a fin de acotar el espectro a lo requerido
 
+#include "filtros.h"
+
 //Filtro Pasa Alto
 /*
 digital finite impulse response (FIR) filter designed with the Android FIR Filter Designer application from www.ledin.com.
@@ -18,10 +20,11 @@ Filter design results:
 Filter order         : 140
 Passband weight      : 0,155621
 */
+
 #define N 141
-static const double h[N] = 
-{
-0.01032684474384226,
+
+static const double h[N] = {
+    0.01032684474384226,
     0.012225172889283637,
     0.008760010997854435,
     -1.884617624506811E-4,
@@ -189,7 +192,7 @@ float filter_fpa(const double x_in)
 //Fin Filtro Pasa Alto
 
 //Filtro Pasa Bajo
-/* 
+/*
 digital finite impulse response (FIR) filter designed with the Android FIR Filter Designer application from www.ledin.com.
 Filter specifications:
 Filter type          : Bandpass
@@ -207,9 +210,9 @@ Passband weight      : 0,045725
 */
 
 #define M 164
-static const double g[M] = 
-{
- -0.007020524768008338,
+
+static const double g[M] = {
+    -0.007020524768008338,
     -0.00236605962020389,
     -0.0027648958809981666,
     -0.0032022984896572263,
