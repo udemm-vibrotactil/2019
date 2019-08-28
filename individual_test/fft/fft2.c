@@ -8,7 +8,7 @@ Ejemplo basado en FFT.c, usando 2 FFT con OpenMP
 #include <pulse/simple.h>
 #include <pulse/error.h>
 #include <omp.h>
-
+#include <time.h>
 #include <math.h>
 #include "kiss_fft.h"
 
@@ -46,7 +46,7 @@ static float find_max(kiss_fft_cpx * cx_out, int size, int sampling_freq,int F) 
 	// ANSI/VT100 Terminal Control Escape Sequences
 	// http://www.termsys.demon.co.uk/vtansi.htm
 //	printf("%5d#  \033[32m  MAX_FREQ=%5d \033[30m  VALUE=%.0f\r", counter++, max_freq, max);
-	printf("%5d#  MAX_FREQ=%5d  AMPLITUD=%.0f\n F=%d", counter++, max_freq, max,F);
+	printf("%5d#  MAX_FREQ=%5d  AMPLITUD=%.0f F=%d\n", counter++, max_freq, max,F);
 
 
 
@@ -109,6 +109,9 @@ int main(int argc, char*argv[]) {
     printf("En este ejemplo se desea usar %d hilo(s)\n", omp_get_max_threads());
 
     for (;;) {
+	clock_t t; //Declaración de una variable de tiempo
+	t = clock();  // Inicio medición del tiempo
+
     			/* Record some data ... */
 			if (pa_simple_read(s, buf, sizeof(buf), &error) < 0) {
 				fprintf(stderr, __FILE__": pa_simple_read() failed: %s\n", pa_strerror(error));
@@ -148,6 +151,8 @@ int main(int argc, char*argv[]) {
 			}
 		 }
 
+	t = clock() - t;  //Fin de la medición y diferencia
+	printf ("Demora %f ms \n",(1000*(float)t)/CLOCKS_PER_SEC);
 
   }
 
