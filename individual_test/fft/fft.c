@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include <time.h>
 #include <pulse/simple.h>
 #include <pulse/error.h>
 
@@ -44,7 +45,7 @@
 
 
 
-#define AUDIO_BUF_SIZE 1024
+#define AUDIO_BUF_SIZE 2048
 
 #define BUFSIZE (AUDIO_BUF_SIZE*4)
 
@@ -156,6 +157,9 @@ int main(int argc, char*argv[]) {
     printf("buf size: %ld bytes\n",sizeof(buf));
 
     for (;;) {
+	clock_t t; //Declaración de una variable de tiempo
+	t = clock();  // Inicio medición del tiempo
+
 
     	if (DEBUG) {
     		populate_audio_buf(buf, sizeof(buf) / sizeof(uint16_t), 440, SAMPLING_FREQ);
@@ -168,7 +172,7 @@ int main(int argc, char*argv[]) {
 			}
     	}
 
-    	memcpy(cx_in, &cx_in[AUDIO_BUF_SIZE], (BUFSIZE - AUDIO_BUF_SIZE) * sizeof(kiss_fft_cpx));
+  	memcpy(cx_in, &cx_in[AUDIO_BUF_SIZE], (BUFSIZE - AUDIO_BUF_SIZE) * sizeof(kiss_fft_cpx));
 
     	for (int i = 0; i < AUDIO_BUF_SIZE; i++) {
     		cx_in[i + BUFSIZE - AUDIO_BUF_SIZE].r = buf[i];
@@ -180,8 +184,10 @@ int main(int argc, char*argv[]) {
 
     	find_max(cx_out, BUFSIZE, SAMPLING_FREQ);
 
-
-        if (DEBUG)
+	t = clock() - t;  //Fin de la medición y diferencia
+	printf ("Demora %f ms \n",(1000*(float)t)/CLOCKS_PER_SEC);
+        
+	if (DEBUG)
         	break;
 
     }
