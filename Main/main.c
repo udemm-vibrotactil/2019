@@ -13,6 +13,7 @@ gcc -O3 main.c kiss_fft.c filtros.c selector.c otras_funciones.c -o vibrotact -l
 #include <stdio.h> //Requerido por PulseAudio API
 #include <unistd.h> //Requerido por PulseAudio API
 #include <string.h> //Requerido por PulseAudio API
+#include <stdint.h> //Requerido por pYin
 #include <errno.h>
 #include <stdlib.h> //Para utilizar files - grabacion de archivos para debug
 #include <pulse/simple.h> //Para utilizar el PulseAudio API - modo simple
@@ -20,6 +21,7 @@ gcc -O3 main.c kiss_fft.c filtros.c selector.c otras_funciones.c -o vibrotact -l
 #include <omp.h> //Para utilziar OpenMP - Multiprocesamiento
 #include <math.h> //Requerido por kissFFT
 #include "kiss_fft.h" //Para utilizar kissFFT - Analizador de FFT
+#include "Yin.h" //Para utilizar pYin (analisis F0)
 #include <time.h> //Para el calculo del tiempo de procesamiento
 
 //Inclucion de funciones
@@ -92,6 +94,8 @@ int main() {
     	kiss_fft_cpx * cx_out;
     	kiss_fft_cpx * cx_out2;
 
+	Yin yin;
+
 	/* Inicializo fft data structure */
 	cfg = kiss_fft_alloc( BUFSIZE ,/*is_inverse_fft*/ 0 ,0,0 );
 
@@ -151,6 +155,13 @@ int main() {
 				vibrador2 = selector (find_max(cx_out2, BUFSIZE, SAMPLING_FREQ));
 			}
 			//Falta Glottal Rate Detector
+			 #pragma omp section
+                        {
+			        float pitch;
+	       			Yin_init(&yin, AUDIO_BUF_SIZE /*tamano Audio a analizar*/, 0.05/*Threshold incerteza decimal*/);
+		 	        pitch = Yin_getPitch(&yin, buf); //Devuelve la frec fundamental
+			        printf("Pitch is found to be %f Hz and probabiity %f\n",pitch, Yin_getProbability(&yin) );
+			}
 		 }
 
 
