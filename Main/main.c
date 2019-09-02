@@ -20,7 +20,8 @@ gcc -O3 main.c kiss_fft.c filtros.c selector.c otras_funciones.c -o vibrotact -l
 #include <pulse/error.h> //Para utilizar el PulseAudio API - manejo de errores
 #include <omp.h> //Para utilziar OpenMP - Multiprocesamiento
 #include <math.h> //Requerido por kissFFT
-#include "kiss_fft.h" //Para utilizar kissFFT - Analizador de FFT
+//#include "kiss_fft.h" //Para utilizar kissFFT - Analizador de FFT
+#include "kiss_fftr.h" //Para utilizar kissFFT - Analizador de FFT
 #include "Yin.h" //Para utilizar pYin (analisis F0)
 #include <time.h> //Para el calculo del tiempo de procesamiento
 
@@ -32,8 +33,10 @@ gcc -O3 main.c kiss_fft.c filtros.c selector.c otras_funciones.c -o vibrotact -l
 
 
 //Definicion de constantes
-#define AUDIO_BUF_SIZE 2048 //Defino la cantidad de samples a procesar
-#define BUFSIZE (AUDIO_BUF_SIZE*4) //Requerido para el kissFFT
+//#define AUDIO_BUF_SIZE 2048 //Defino la cantidad de samples a procesar
+#define AUDIO_BUF_SIZE 1024 //Defino la cantidad de samples a procesar
+//#define BUFSIZE (AUDIO_BUF_SIZE*4) //Requerido para el kissFFT
+#define BUFSIZE (AUDIO_BUF_SIZE*2) //Requerido para el kissFFT
 #define SAMPLING_FREQ 44100  //Defino la frecuencia de muestreo
 
 #define PI 3.14159265359 //Cte Para la ventana de Hamming
@@ -41,7 +44,7 @@ gcc -O3 main.c kiss_fft.c filtros.c selector.c otras_funciones.c -o vibrotact -l
 #define a1 0.46164 //Cte Para la ventana de Hamming
 
 //Funcion para hallar la frecuancia de maxima amplitud
-static float find_max(kiss_fft_cpx * cx_out, int size, int sampling_freq) {
+static float find_max(kiss_fft_cpx * cx_out, int size /* BUFSIZE*/, int sampling_freq,int f) {
 
 	float max = 0;
 	int max_freq = 0;
@@ -61,6 +64,19 @@ static float find_max(kiss_fft_cpx * cx_out, int size, int sampling_freq) {
 	return max_freq;
 }
 
+kiss_fft_cpx* copycpx(float *mat, int nframe) {
+	int i;
+	kiss_fft_cpx *mat2;
+	mat2=(kiss_fft_cpx*)KISS_FFT_MALLOC(sizeof(kiss_fft_cpx)*nframe);
+        kiss_fft_scalar zero;
+        memset(&zero,0,sizeof(zero) );
+	for(i=0; i<nframe ; i++)
+	{
+		mat2[i].r = mat[i];
+		mat2[i].i = zero;
+	}
+	return mat2;
+}
 
 /* Funcion Principal */
 int main() {
@@ -85,25 +101,30 @@ int main() {
         .channels = 1 // Canal Mono
     };
 
-	int numeroHilos=4; //Cantidad de hilos paralelos
+	int numeroHilos=8; //Cantidad de hilos paralelos
 	omp_set_num_threads(numeroHilos); //Configuracion de la cantidad de hilos
 
+	kiss_fft_cpx out_cpx[AUDIO_BUF_SIZE],/*out[size],*/*cpx_buf;
+	kiss_fftr_cfg fft = kiss_fftr_alloc(BUFSIZE ,0 ,0,0);
+	
+	/*
 	kiss_fft_cfg cfg;
     	kiss_fft_cpx * cx_in;
     	kiss_fft_cpx * cx_in2;
     	kiss_fft_cpx * cx_out;
     	kiss_fft_cpx * cx_out2;
-
+	*/
+	
 	Yin yin;
-
+	
 	/* Inicializo fft data structure */
-	cfg = kiss_fft_alloc( BUFSIZE ,/*is_inverse_fft*/ 0 ,0,0 );
+	//cfg = kiss_fft_alloc( BUFSIZE ,/*is_inverse_fft*/ 0 ,0,0 );
 
-	cx_in = calloc(BUFSIZE, sizeof(kiss_fft_cpx));
-	cx_in2 = calloc(BUFSIZE, sizeof(kiss_fft_cpx));
-	cx_out = calloc(BUFSIZE, sizeof(kiss_fft_cpx));
-	cx_out2 = calloc(BUFSIZE, sizeof(kiss_fft_cpx));
-
+	//cx_in = calloc(BUFSIZE, sizeof(kiss_fft_cpx));
+	//cx_in2 = calloc(BUFSIZE, sizeof(kiss_fft_cpx));
+	//cx_out = calloc(BUFSIZE, sizeof(kiss_fft_cpx));
+	//cx_out2 = calloc(BUFSIZE, sizeof(kiss_fft_cpx));
+		
 	/* Creo el stream de grabacion - Conexion con servidor PulseAudio */
 	if (!(s = pa_simple_new(NULL, "vibrotact", PA_STREAM_RECORD, NULL, "record", &ss, NULL, NULL, &error))) {
 		fprintf(stderr, __FILE__": pa_simple_new() failed: %s\n", pa_strerror(error));
@@ -122,9 +143,14 @@ int main() {
 				goto finish;
 			}
 	/* Fin de lectura de SAMPLES */
-
-    	memcpy(cx_in, &cx_in[AUDIO_BUF_SIZE], (BUFSIZE - AUDIO_BUF_SIZE) * sizeof(kiss_fft_cpx));
-    	memcpy(cx_in2, &cx_in2[AUDIO_BUF_SIZE], (BUFSIZE - AUDIO_BUF_SIZE) * sizeof(kiss_fft_cpx));
+	
+	cpx_buf = copycpx(buf,BUFSIZE); //Realizo la copia
+    	kiss_fftr(fft,(kiss_fft_scalar*)cpx_buf, out_cpx); //Calculo el FFT
+	for(i=0;i<AUDIO_BUF_SIZE;i++){
+		buf[i] = (a0 - a1 * cos(2*PI*i/(AUDIO_BUF_SIZE-1))) * buf[i]; //Aplico una ventana de Hamming
+	}
+//    	memcpy(cx_in, &cx_in[AUDIO_BUF_SIZE], (BUFSIZE - AUDIO_BUF_SIZE) * sizeof(kiss_fft_cpx));
+//    	memcpy(cx_in2, &cx_in2[AUDIO_BUF_SIZE], (BUFSIZE - AUDIO_BUF_SIZE) * sizeof(kiss_fft_cpx));
 
     	/* Inicio procesamiento en paralelo (F1 y F2)*/
 
@@ -133,18 +159,21 @@ int main() {
 			#pragma omp section
 			{
 				/* Canal F1 */
+				/*
 				int i;
 				for(i=0;i<AUDIO_BUF_SIZE;i++){
 					buf2[i] = filter_fpb(buf[i]); //Aplico filtro pasa bajos
-					buf2[i] = (a0 - a1 * cos(2*PI*i/(AUDIO_BUF_SIZE-1))) * buf2[i]; //Aplico una ventana de Hamming
+					
 					cx_in[i + BUFSIZE - AUDIO_BUF_SIZE].r = buf2[i]; //Hago copia  del buffer de audio al buffer del FFT
 				}
 				kiss_fft( cfg , cx_in , cx_out ); //Aplicto FFT 
-				vibrador1 = selector(find_max(cx_out, BUFSIZE, SAMPLING_FREQ)); //Hallo la frecuencia de mayor amplitud y selecciono el vibrador a activar
+				*/
+				vibrador1 = selector(find_max(cx_out, BUFSIZE, SAMPLING_FREQ,1)); //Hallo la frecuencia de mayor amplitud y selecciono el vibrador a activar
 			}
 			#pragma omp section
 			{
 				/* Canal F2 */
+				/*
 				int i;
 				for(i=0;i<AUDIO_BUF_SIZE;i++){
 					buf3[i] = filter_fpa(buf[i]); //Aplico filtro pasa altos
@@ -152,9 +181,10 @@ int main() {
 					cx_in2[i + BUFSIZE - AUDIO_BUF_SIZE].r = buf3[i]; //Hago copia  del buffer de audio al buffer del FFT
 				}
 				kiss_fft( cfg , cx_in2 , cx_out2 );
-				vibrador2 = selector (find_max(cx_out2, BUFSIZE, SAMPLING_FREQ));
+				*/
+				vibrador2 = selector (find_max(cx_out2, BUFSIZE, SAMPLING_FREQ,2));
 			}
-			//Falta Glottal Rate Detector
+			//Glottal Rate Detector (algoritmo de correlacion Yin)
 			 #pragma omp section
                         {
 			        float pitch;
