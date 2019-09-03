@@ -28,9 +28,8 @@ gcc -O3 main.c kiss_fftr.c kiss_fft.c filtros.c selector.c otras_funciones.c -o 
 
 //Inclusion de funciones
 #include "selector.h"
-#include "filtros.h"
-//#include "otras_funciones.h"
-
+//#include "filtros.h"
+#include "fft.h"
 
 //Definicion de constantes
 #define AUDIO_BUF_SIZE 1024 //Defino la cantidad de samples a procesar
@@ -42,7 +41,8 @@ gcc -O3 main.c kiss_fftr.c kiss_fft.c filtros.c selector.c otras_funciones.c -o 
 #define a1 0.46164 //Cte Para la ventana de Hamming
 
 //Funcion para hallar la frecuancia de maxima amplitud
-static float find_max(kiss_fft_cpx * cx_out, int size /* BUFSIZE*/, int sampling_freq,int f) {
+/*
+static float find_max(kiss_fft_cpx * cx_out, int size, int sampling_freq,int f) {
 
 	float max = 0;
 	int max_freq = 0;
@@ -90,6 +90,7 @@ kiss_fft_cpx* copycpx(float *mat, int nframe) {
 	}
 	return mat2;
 }
+*/
 
 /* Funcion Principal */
 int main() {
@@ -174,12 +175,15 @@ int main() {
 	       			Yin_init(&yin, AUDIO_BUF_SIZE /*tamano Audio a analizar*/, 0.05/*Threshold incerteza decimal*/);
 		 	        pitch = Yin_getPitch(&yin, buf2); //Devuelve la frec fundamental
 			}
+			#pragma omp barrier //espero que finalice los threads anteriores
+			{
+				printf("F0 es %f Hz \t",pitch);
+				printf("Canal Activo %d \t",vibrador1);
+				printf("Canal Activo %d \t",vibrador2);
+			}
 		 }
 	
-        printf("F0 es %f Hz \t",pitch);
-	printf("Canal Activo %d \t",vibrador1);
-	printf("Canal Activo %d \t",vibrador2);
-	
+        	
 	//Calculo el tiempo de procesamiento (modo debug)
 	#ifdef DEBUG
 		t = clock() - t;
