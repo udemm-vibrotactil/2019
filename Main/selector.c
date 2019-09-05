@@ -70,6 +70,7 @@ int selector (int freq) {
 		printf ("No hay coincidencia - Frecuencia=%d Hz \n",freq);
 	  #endif
 	  result = 0;
+	  break;
 	}
 
 	return result;

@@ -40,57 +40,6 @@ gcc -O3 main.c kiss_fftr.c kiss_fft.c filtros.c selector.c otras_funciones.c -o 
 #define a0 0.53836 //Cte Para la ventana de Hamming
 #define a1 0.46164 //Cte Para la ventana de Hamming
 
-//Funcion para hallar la frecuancia de maxima amplitud
-/*
-static float find_max(kiss_fft_cpx * cx_out, int size, int sampling_freq,int f) {
-
-	float max = 0;
-	int max_freq = 0;
-	int f_min, f_max;
-
-	if (f==1) {
-		f_min=100;
-		f_max=1999;
-	}
-
-	if (f==2){
-		f_max=7000;
-		f_min=1200;
-	}
-
-	// Omito la frecuencia cero
-	for (int i = 1; i < size / 2; i++) {
-
-		int freq = sampling_freq * i / size;
-
-		if(freq>f_min && freq<f_max){
-
-			if (cx_out[i].r >= max) {
-				max = cx_out[i].r;
-				max_freq = freq;
-			}
-		}
-
-	}
-
-	return max_freq;
-}
-
-//Funcion de copia e inicalizacion variables de kissFFT
-kiss_fft_cpx* copycpx(float *mat, int nframe) {
-	int i;
-	kiss_fft_cpx *mat2;
-	mat2=(kiss_fft_cpx*)KISS_FFT_MALLOC(sizeof(kiss_fft_cpx)*nframe);
-        kiss_fft_scalar zero;
-        memset(&zero,0,sizeof(zero) );
-	for(i=0; i<nframe ; i++)
-	{
-		mat2[i].r = mat[i];
-		mat2[i].i = zero;
-	}
-	return mat2;
-}
-*/
 
 /* Funcion Principal */
 int main() {
@@ -175,15 +124,18 @@ int main() {
 	       			Yin_init(&yin, AUDIO_BUF_SIZE /*tamano Audio a analizar*/, 0.05/*Threshold incerteza decimal*/);
 		 	        pitch = Yin_getPitch(&yin, buf2); //Devuelve la frec fundamental
 			}
-			#pragma omp barrier //espero que finalice los threads anteriores
-			{
-				printf("F0 es %f Hz \t",pitch);
-				printf("Canal Activo %d \t",vibrador1);
-				printf("Canal Activo %d \t",vibrador2);
-			}
+
 		 }
-	
-        	
+
+	//	#pragma omp barrier //espero que finalice los threads anteriores
+	//		{
+				if (pitch!=-1) {
+					printf("F0 %f Hz \t",pitch);
+					printf("F1 CH %d \t",vibrador1);
+					printf("F2 CH %d \n",vibrador2);
+				}
+	//		}
+
 	//Calculo el tiempo de procesamiento (modo debug)
 	#ifdef DEBUG
 		t = clock() - t;
