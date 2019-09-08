@@ -39,7 +39,7 @@ float find_max(kiss_fft_cpx * cx_out, int size_fft /* BUFSIZE*/, int sampling_fr
 			}
 		}
 	}
-
+	//Puede devolver 0 que representa que no hubo coincidencia
 	return max_freq;
 }
 
