@@ -41,6 +41,25 @@ gcc -O3 main.c kiss_fftr.c kiss_fft.c filtros.c selector.c otras_funciones.c -o 
 #define a1 0.46164 //Cte Para la ventana de Hamming
 
 
+// C function showing how to do time delay 
+//#include <stdio.h> 
+// To use time library of C 
+//#include <time.h> 
+
+void delay(int number_of_seconds) 
+{ 
+	// Converting time into milli_seconds 
+	int milli_seconds = 1000 * number_of_seconds; 
+
+	// Stroing start time 
+	clock_t start_time = clock(); 
+
+	// looping till required time is not acheived 
+	while (clock() < start_time + milli_seconds) 
+		; 
+} 
+
+
 /* Funcion Principal */
 int main() {
 
@@ -53,12 +72,13 @@ int main() {
     	int error;
 	int vibrador1,vibrador2;
         float pitch;
-
-
+	float periodo;
+	clock_t t1;
+	
 	#ifdef DEBUG
 	  clock_t t;
 	#endif
-
+	
 	/* Caracteristicas del SAMPLE - Configuracion del servidor PulseAudio */
     static const pa_sample_spec ss = {
         .format = PA_SAMPLE_FLOAT32LE, // 32 bits Flotante Little Endian
@@ -85,9 +105,12 @@ int main() {
 	//Bucle infinito - Comienzo del procesamiento
 	for (;;) {
 		#ifdef DEBUG
-			t = clock();
+			t = clock(); //Comienzo a medir tiempo del bucle
 		#endif
+	t1 = clock(); //Comienzo a medir tiempo del bucle
 	int i;
+	
+		
     	/* Lectura de SAMPLES y los almaceno en el array buf */
 			if (pa_simple_read(s, buf, sizeof(buf), &error) < 0) {
 				fprintf(stderr, __FILE__": pa_simple_read() failed: %s\n", pa_strerror(error));
@@ -125,21 +148,35 @@ int main() {
 		 	        pitch = Yin_getPitch(&yin, buf2); //Devuelve la frec fundamental
 			}
 
-		 }
-
-	//	#pragma omp barrier //espero que finalice los threads anteriores
-	//		{
-				if (pitch!=-1) {
-					printf("F0 %f Hz \t",pitch);
-					printf("F1 CH %d \t",vibrador1);
-					printf("F2 CH %d \n",vibrador2);
-				}
-	//		}
+		 } //Al finalizar , ya generar una barrera (espera) para que finalicen todos los hilos abiertos
+		
+		//Mido tiempo de proceso y veo si es necesario realizar mas espera de apagado
+		t1 = clock() - t1;
+		/*
+		if ((periodo - t1) > 0) { 
+			delay(periodo - t1);
+		}
+		*/
+		//Evaluo si hay pulso glotal
+		if (pitch!=-1) {
+			periodo = 1/pitch;
+			printf("F0 %.2f Hz - F1 CH %d - F2 CH %d - T %.2f ms \n",pitch,vibrador1,vibrador2);
+			if (vibrador1 > 0){
+			//envio F1 ON
+			}
+			
+			if (vibrador2 > 0){		
+			//envio F2 ON
+			}
+			//delay (periodo)
+			//envio OFF 
+		}
+	
 
 	//Calculo el tiempo de procesamiento (modo debug)
 	#ifdef DEBUG
 		t = clock() - t;
-		printf ("Demora %f ms \n",(1000*(float)t)/CLOCKS_PER_SEC);
+		printf ("Demora Proceso %f ms \n",(1000*(float)t)/CLOCKS_PER_SEC);
 	#endif
 
 	}
