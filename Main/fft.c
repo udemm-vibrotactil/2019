@@ -6,16 +6,20 @@
 
 
 #include "fft.h"
-#define INTENSIDAD 10
+#define INTENSIDAD 5
 
 //Funcion para hallar la frecuancia de maxima amplitud
 float find_max(kiss_fft_cpx * cx_out, int size_fft /* BUFSIZE*/, int sampling_freq,int f) {
 
 	float max = 0;
 	int max_freq = 0;
-	int f_min, f_max;
+	int f_min = 0; 
+	int f_max = 0;
 	float amplitud;
-	size = size_fft / 2
+	int size;
+
+	size = size_fft / 2;
+
 	if (f==1) {
 		f_min=100;
 		f_max=1999;
@@ -30,7 +34,7 @@ float find_max(kiss_fft_cpx * cx_out, int size_fft /* BUFSIZE*/, int sampling_fr
 		int freq = sampling_freq * i / size;
 		if(freq>f_min && freq<f_max){
 			//Normalizo la amplitud
-			amplitud = 2*sqrt((cx_out[i].r*cx_out[i].r) + (cx_out[i].i*cx_out[i].i))/size;
+			amplitud = 2*sqrt((cx_out[i].r*cx_out[i].r) + (cx_out[i].i*cx_out[i].i));
 			//Transformo en veces (escala logaritmica) la amplitud
 			//amplitud_db=20*log10(amplitud) 
 			if (amplitud >= max && amplitud > INTENSIDAD) {
@@ -40,6 +44,7 @@ float find_max(kiss_fft_cpx * cx_out, int size_fft /* BUFSIZE*/, int sampling_fr
 		}
 	}
 	//Puede devolver 0 que representa que no hubo coincidencia
+//	printf("Amplitud %f \n",max);
 	return max_freq;
 }
 

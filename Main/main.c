@@ -22,9 +22,7 @@ gcc -O3 main.c kiss_fftr.c kiss_fft.c filtros.c selector.c otras_funciones.c -o 
 #include <math.h> //Requerido por kissFFT
 #include "kiss_fftr.h" //Para utilizar kissFFT - Analizador de FFT
 #include "Yin.h" //Para utilizar pYin (analisis F0)
-#ifdef DEBUG
-	#include <time.h> //Para el calculo del tiempo de procesamiento
-#endif
+#include <time.h> //Para el calculo del tiempo de procesamiento
 
 //Inclusion de funciones
 #include "selector.h"
@@ -159,8 +157,8 @@ int main() {
 		*/
 		//Evaluo si hay pulso glotal
 		if (pitch!=-1) {
-			periodo = 1/pitch;
-			printf("F0 %.2f Hz - F1 CH %d - F2 CH %d - T %.2f ms \n",pitch,vibrador1,vibrador2);
+			periodo = (float) 1/pitch;
+			printf("F0 %.2f Hz - F1 CH %d - F2 CH %d - T %.3f seg \n",pitch,vibrador1,vibrador2,periodo);
 			if (vibrador1 > 0){
 			//envio F1 ON
 			}
@@ -168,7 +166,7 @@ int main() {
 			if (vibrador2 > 0){		
 			//envio F2 ON
 			}
-			//delay (periodo)
+			delay (periodo);
 			//envio OFF 
 		}
 	
