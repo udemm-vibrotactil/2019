@@ -9,16 +9,16 @@
 #define INTENSIDAD 5
 
 //Funcion para hallar la frecuancia de maxima amplitud
-float find_max(kiss_fft_cpx * cx_out, int size_fft /* BUFSIZE*/, int sampling_freq,int f) {
+float find_max(kiss_fft_cpx * cx_out, int size /*AUDIO_ BUFSIZE*/, int sampling_freq,int f) {
 
 	float max = 0;
 	int max_freq = 0;
 	int f_min = 0; 
 	int f_max = 0;
 	float amplitud;
-	int size;
+//	int size;
 
-	size = size_fft / 2;
+//	size = size_fft / 2;
 
 	if (f==1) {
 		f_min=100;

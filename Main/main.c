@@ -64,15 +64,18 @@ int main() {
 	//Declaro las variables locales
 	pa_simple *s = NULL;
 
-	float buf[AUDIO_BUF_SIZE];
-	float buf2[AUDIO_BUF_SIZE];
+	float buf[AUDIO_BUF_SIZE]; //Para el procesamiento FFT
+	float buf2[AUDIO_BUF_SIZE]; //Para el procesamiento del glotal
     	int ret = 1;
     	int error;
 	int vibrador1,vibrador2;
         float pitch;
 	float periodo;
 	clock_t t1;
-	
+
+	int j =0;
+	char spinner[3]={'/','-','|'};
+
 	#ifdef DEBUG
 	  clock_t t;
 	#endif
@@ -99,7 +102,7 @@ int main() {
 		fprintf(stderr, __FILE__": pa_simple_new() failed: %s\n", pa_strerror(error));
 		goto finish;
 		}
-
+	printf("---> Inicio del programa <--- \n");
 	//Bucle infinito - Comienzo del procesamiento
 	for (;;) {
 		#ifdef DEBUG
@@ -132,12 +135,12 @@ int main() {
 			#pragma omp section
 			{
 				/* Canal F1 */
-				vibrador1 = selector(find_max(cx_out, BUFSIZE, SAMPLING_FREQ,1)); //Hallo la frecuencia de mayor amplitud y selecciono el vibrador a activar
+				vibrador1 = selector(find_max(cx_out, AUDIO_BUF_SIZE, SAMPLING_FREQ,1)); //Hallo la frecuencia de mayor amplitud y selecciono el vibrador a activar
 			}
 			#pragma omp section
 			{
 				/* Canal F2 */
-				vibrador2 = selector (find_max(cx_out, BUFSIZE, SAMPLING_FREQ,2));
+				vibrador2 = selector (find_max(cx_out, AUDIO_BUF_SIZE, SAMPLING_FREQ,2));
 			}
 			//Glottal Rate Detector (algoritmo de correlacion Yin)
 			 #pragma omp section
@@ -169,7 +172,10 @@ int main() {
 			delay (periodo);
 			//envio OFF 
 		}
-	
+
+	//Animacion de ejcucion
+	printf("%c %d  \r",spinner[j],j);
+	j = (j<2) ? j+1 : 0;
 
 	//Calculo el tiempo de procesamiento (modo debug)
 	#ifdef DEBUG
