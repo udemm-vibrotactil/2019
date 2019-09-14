@@ -15,7 +15,7 @@ gcc -O3 main.c kiss_fftr.c kiss_fft.c filtros.c selector.c otras_funciones.c -o 
 #include <string.h> //Requerido por PulseAudio API
 #include <stdint.h> //Requerido por pYin
 #include <errno.h> //Requerido para control de errores por PulseAudio API
-//#include <stdlib.h> //Para utilizar files - grabacion de archivos para debug
+//#include <stdlib.h> //Para utilizar files
 #include <pulse/simple.h> //Para utilizar el PulseAudio API - modo simple
 #include <pulse/error.h> //Para utilizar el PulseAudio API - manejo de errores
 #include <omp.h> //Para utilziar OpenMP - Multiprocesamiento
@@ -23,10 +23,14 @@ gcc -O3 main.c kiss_fftr.c kiss_fft.c filtros.c selector.c otras_funciones.c -o 
 #include "kiss_fftr.h" //Para utilizar kissFFT - Analizador de FFT
 #include "Yin.h" //Para utilizar pYin (analisis F0)
 #include <time.h> //Para el calculo del tiempo de procesamiento
+#include <fcntl.h> //Requerido para la comunicacion I2C
+#include <linux/i2c-dev.h> //Para utilizar comunicacion I2C (ioctl)
+#include <linux/i2c.h> //Para utilizar comunicacion I2C (ioctl)
+//#include <linux/ioctl.h>
 
 //Inclusion de funciones
 #include "selector.h"
-//#include "filtros.h"
+#include "i2c.h"
 #include "fft.h"
 
 //Definicion de constantes
@@ -110,8 +114,8 @@ int main() {
 		#endif
 	t1 = clock(); //Comienzo a medir tiempo del bucle
 	int i;
-	
-		
+
+
     	/* Lectura de SAMPLES y los almaceno en el array buf */
 			if (pa_simple_read(s, buf, sizeof(buf), &error) < 0) {
 				fprintf(stderr, __FILE__": pa_simple_read() failed: %s\n", pa_strerror(error));
@@ -163,14 +167,18 @@ int main() {
 			periodo = (float) 1/pitch;
 			printf("F0 %.2f Hz - F1 CH %d - F2 CH %d - T %.3f seg \n",pitch,vibrador1,vibrador2,periodo);
 			if (vibrador1 > 0){
-			//envio F1 ON
+				//envio F1 ON
+				i2c_send(vibrador1,0,255,0);
 			}
-			
-			if (vibrador2 > 0){		
-			//envio F2 ON
+
+			if (vibrador2 > 0){
+				//envio F2 ON
+				i2c_send(vibrador2,0,255,0);
 			}
 			delay (periodo);
-			//envio OFF 
+			//envio OFF
+			i2c_send(vibrador1,0,0,0);
+			i2c_send(vibrador2,0,0,0);
 		}
 
 	//Animacion de ejcucion

@@ -12,6 +12,7 @@ entrada3="fft.c"
 entrada4="Yin.c"
 entrada5="selector.c"
 entrada6="kiss_fft.c"
+entrada7="i2c.c"
 
 #echo -e "Modo debug [S/N]?"
 read -p "Modo debug [S/N]?:" modo_debug
@@ -26,7 +27,7 @@ else
 fi
 
 #gcc -O3 $entrada1 $entrada2 $entrada3 $entrada4 $entrada5 $entrada6 -Wall -o $salida -lpulse -lstdc++ -lpulse-simple -lm -fopenmp
-gcc -O3 $entrada1 $entrada2 $entrada3 $entrada4 $entrada5 $entrada6 $debug1 -Wall -o $salida -lpulse -lstdc++ -lpulse-simple -lm -fopenmp 
+gcc -O3 $entrada1 $entrada2 $entrada3 $entrada4 $entrada5 $entrada6 $entrada7 $debug1 -Wall -o $salida -lpulse -lstdc++ -lpulse-simple -lm -fopenmp 
 #-ffast-math
 #gcc $entrada1 $entrada2 $entrada3 $entrada5 -o $salida -lpulse -lstdc++ -lpulse-simple -lm -fopenmp
 
