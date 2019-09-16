@@ -9,18 +9,19 @@
 */
 
 #include "i2c.h"
+#define ATTINY 0x0A 
+//char buffer[7];
 
-int deviceHandle;
-int readBytes;
-char buffer[7];
-
-int i2c_send (int led, int R, int G, int B)
+int i2c_send (char numled, char R, char G, char B)
 {
+	int deviceHandle;
+	int readBytes;
+
 	// initialize buffer
-	buffer[0] = 0x00;
+	//buffer[0] = 0x00;
 
 	// address of i2c ATTiny device
-	int deviceI2CAddress = 0x0A;  // (0x2A = 42)
+	int deviceI2CAddress = ATTINY;  // (0x2A = 42)
 
 	// open device on /dev/i2c-0
 	if ((deviceHandle = open("/dev/i2c-0", O_RDWR)) < 0) {
@@ -32,9 +33,16 @@ int i2c_send (int led, int R, int G, int B)
 	if (ioctl(deviceHandle, I2C_SLAVE, deviceI2CAddress) < 0) {
 		printf("Error: Couldn't find ATTiny on address!\n");
 		return 1;
-	}  
+	} 
 
 	// begin transmission and request acknowledgement
+
+	readBytes=write(deviceHandle, &numled,1);
+	readBytes=write(deviceHandle, &R,1);
+	readBytes=write(deviceHandle, &G,1);
+	readBytes=write(deviceHandle, &B,1);
+
+/*
 	readBytes = write(deviceHandle, buffer, 1);
 	if (readBytes != 1)
 	{
@@ -48,7 +56,8 @@ int i2c_send (int led, int R, int G, int B)
 		i2c_command(G);//Color Verde(Green)
 		i2c_command(B);//Color Azul (Blue)
 	}
-	
+*/	
+
 	// close connection and return
 	close(deviceHandle);
 	return 0;
@@ -56,29 +65,3 @@ int i2c_send (int led, int R, int G, int B)
 
 
 
-// function for testing command
-void i2c_command(int command_int)
-{
-	char command_str[4];
-	snprintf(command_str, sizeof(command_str), "%d", command_int);
-//	itoa(command_int,command_str,10); //Convierto de entero a string
-	readBytes = write(deviceHandle, command_str , sizeof(command_str));
-	// give arduino some reaction time
-	usleep(1000); // 1ms
-
-	// Lee ACK, comprueba que este ok lo enviado
-	readBytes = read(deviceHandle, buffer, 1);
-	if (readBytes != 1)
-	{
-		printf("Error: Received no data!");
-	}
-/*
-	else
-	{
-		// check response: 0 = error / 1 = success
-		if (buffer[0] == 1)
-		{
-			printf("OK!\n");
-		}
-	}*/
-}

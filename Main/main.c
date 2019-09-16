@@ -57,8 +57,7 @@ void delay(int number_of_seconds)
 	clock_t start_time = clock(); 
 
 	// looping till required time is not acheived 
-	while (clock() < start_time + milli_seconds) 
-		; 
+	while (clock() < start_time + milli_seconds); 
 } 
 
 
@@ -72,7 +71,7 @@ int main() {
 	float buf2[AUDIO_BUF_SIZE]; //Para el procesamiento del glotal
     	int ret = 1;
     	int error;
-	int vibrador1,vibrador2;
+	char vibrador1,vibrador2;
         float pitch;
 	float periodo;
 	clock_t t1;
@@ -165,20 +164,24 @@ int main() {
 		//Evaluo si hay pulso glotal
 		if (pitch!=-1) {
 			periodo = (float) 1/pitch;
-			printf("F0 %.2f Hz - F1 CH %d - F2 CH %d - T %.3f seg \n",pitch,vibrador1,vibrador2,periodo);
-			if (vibrador1 > 0){
+			printf("F0 %.2f Hz - F1 CH %c - F2 CH %c - T %.3f seg \n",pitch,vibrador1,vibrador2,periodo);
+			
+			if (vibrador1 != 0x0){
 				//envio F1 ON
-				i2c_send(vibrador1,0,255,0);
+				i2c_send(vibrador1,0x0,0xFF,0x0);
 			}
 
-			if (vibrador2 > 0){
+			if (vibrador2 != 0x0){
 				//envio F2 ON
-				i2c_send(vibrador2,0,255,0);
+				i2c_send(vibrador2,0x0,0xFF,0x0);
 			}
+			
 			delay (periodo);
 			//envio OFF
-			i2c_send(vibrador1,0,0,0);
-			i2c_send(vibrador2,0,0,0);
+			
+			i2c_send(vibrador1,0x0,0x0,0x0);
+			i2c_send(vibrador2,0x0,0x0,0x0);
+			
 		}
 
 	//Animacion de ejcucion

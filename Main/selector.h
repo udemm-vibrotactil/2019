@@ -2,6 +2,6 @@
 #define SELECTOR_H
 
 #include <stdio.h>
-int selector (int freq);
+char selector (int freq);
 
 #endif
