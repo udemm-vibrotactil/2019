@@ -31,6 +31,7 @@ int main(int argc, char*argv[]) {
     pa_simple *s = NULL;
     int ret = 1;
     int error;
+	int i = 0;
     /* Create the recording stream */
     if (!(s = pa_simple_new(NULL, argv[0], PA_STREAM_RECORD, NULL, "record", &ss, NULL, NULL, &error))) {
         fprintf(stderr, __FILE__": pa_simple_new() failed: %s\n", pa_strerror(error));
@@ -43,11 +44,15 @@ int main(int argc, char*argv[]) {
             fprintf(stderr, __FILE__": pa_simple_read() failed: %s\n", pa_strerror(error));
             goto finish;
         }
-        /* And write it to STDOUT */
+	i++;
+	printf("Audio %i \n",i);
+/*
+         And write it to STDOUT 
         if (loop_write(STDOUT_FILENO, buf, sizeof(buf)) != sizeof(buf)) {
             fprintf(stderr, __FILE__": write() failed: %s\n", strerror(errno));
             goto finish;
         }
+*/
     }
     ret = 0;
 finish:
