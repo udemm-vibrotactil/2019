@@ -34,6 +34,7 @@ Version 1.0
 #define AUDIO_BUF_SIZE 1024 //Defino la cantidad de samples a procesar
 #define BUFSIZE (AUDIO_BUF_SIZE*2) //Requerido para el kissFFT
 #define SAMPLING_FREQ 44100  //Defino la frecuencia de muestreo
+#define HW "hw:0" //Defino el hardware de entrada de audio
 
 #define PI 3.14159265359 //Cte Para la ventana de Hamming
 #define a0 0.53836 //Cte Para la ventana de Hamming
@@ -45,8 +46,7 @@ int main() {
 
 	//Declaro las variables locales
 	snd_pcm_t *capture_handle; //Datos de captura de audio (samples)
-//	snd_pcm_hw_params_t *hw_params; //Parametros de conf de ALSA
-	int err;
+	int err; //Almacena el numero de error
 	int nread;
 
 	int32_t buf0[AUDIO_BUF_SIZE]; //Guardo los samples de Audio
@@ -54,10 +54,10 @@ int main() {
 	float buf2[AUDIO_BUF_SIZE]; //Para el procesamiento del glotal
     	int ret = 1;
 	float M = 2147483648; //Cte para conversionde int32 a float (2 elevado a bits-1)
-	char vibrador1,vibrador2;
-        float pitch;
-	float periodo=0;
-	clock_t t1;
+	char vibrador1,vibrador2; //Almacena el vibrador a activar
+        float pitch; //Almacena la frecuencia fundamental F0
+	float periodo=0; //Almacena el periodo glotal (1/F0)
+	clock_t t1; //Almacena el tiempo en ejecutar cada blucle
 
 	int j =0;
 	char spinner[4]={'/','-','|','\0'};
@@ -91,8 +91,8 @@ int main() {
 
 	/* Configuro el stream de grabacion */
 	/* Abro el stream de grabacion */
-        if ((err = snd_pcm_open (&capture_handle, "hw:0", SND_PCM_STREAM_CAPTURE, 0)) < 0){
-            fprintf (stderr, "Error al abrir el dispositivo de audio [HW:0] (%s)\n",snd_strerror (err));
+        if ((err = snd_pcm_open (&capture_handle, HW, SND_PCM_STREAM_CAPTURE, 0)) < 0){
+            fprintf (stderr, "Error al abrir el dispositivo de audio [HW:X] (%s)\n",snd_strerror (err));
             exit (1);
           }
 
@@ -142,12 +142,12 @@ int main() {
 			#pragma omp section
 			{
 				/* Canal F1 */
-				vibrador1 = selector(find_max(cx_out, AUDIO_BUF_SIZE, SAMPLING_FREQ,1)); //Hallo la frecuencia de mayor amplitud y selecciono el vibrador a activar
+				vibrador1 = selector_F1(find_max_F1(cx_out, AUDIO_BUF_SIZE, SAMPLING_FREQ)); //Hallo la frecuencia de mayor amplitud y selecciono el vibrador a activar
 			}
 			#pragma omp section
 			{
 				/* Canal F2 */
-				vibrador2 = selector(find_max(cx_out, AUDIO_BUF_SIZE, SAMPLING_FREQ,2)); //Hallo la frecuencia de mayor amplitud y selecciono el vibrador a activar
+				vibrador2 = selector_F2(find_max_F2(cx_out, AUDIO_BUF_SIZE, SAMPLING_FREQ)); //Hallo la frecuencia de mayor amplitud y selecciono el vibrador a activar
 			}
 			//Glottal Rate Detector (algoritmo de correlacion Yin)
 			 #pragma omp section

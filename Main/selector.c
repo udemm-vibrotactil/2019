@@ -8,8 +8,8 @@
 
 #include "selector.h"
 
-
-char selector (int freq) {
+//Selector de Canal para F1
+char selector_F1 (int freq) {
 
 	char result;
 
@@ -43,6 +43,25 @@ char selector (int freq) {
 	  #endif
 	  result = 0x4;
 	  break;
+	default:
+	  /* No hay coincidencia de frecuencia */
+	  #ifdef DEBUG
+		printf ("No hay coincidencia - Frecuencia=%d Hz \n",freq);
+	  #endif
+	  result = 0x0;
+	  break;
+	}
+
+	return result;
+}
+
+//Selector de Canal para F2
+char selector_F2 (int freq) {
+
+	char result;
+
+	switch (freq)
+        {
 	case 1200 ... 1599:
       	/* SubCanal 5 - 1200 Hz a 1599 Hz */
       	  #ifdef DEBUG
