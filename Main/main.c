@@ -104,6 +104,7 @@ int main() {
 	
 	//Apago leds y DRV2605 para indicar que se enceuntra listo
 	init_DRV2605 ();
+	sleep(0.001);
 	i2c_send(vibrador1,0x0,0x0,0x0);
 	i2c_send(vibrador2,0x0,0x0,0x0);
 	
@@ -171,7 +172,7 @@ int main() {
 		//Evaluo si hay pulso glotal
 
 		if (pitch!=-1) {
-			periodo = (float) 1/pitch;
+			periodo = (float) (1/pitch) * 2;
 			printf("F0 %.2f Hz - F1 CH %x - F2 CH %x - T %.3f seg \n",pitch,vibrador1,vibrador2,periodo);
 
 			//Solo puede existir 2 vibradores activos al mismo tiempo
@@ -184,6 +185,7 @@ int main() {
 			if (vibrador2 != 0xFF){
 				//envio F2 ON
 				i2c_send(vibrador2,0x0,0xFF,0x0);
+				i2c_vibrador (vibrador2, 0x01);
 			}
 
 			//Espero el tiempo glotal antes de desactivarlos
@@ -192,7 +194,7 @@ int main() {
 			//envio OFF
 			i2c_send(vibrador1,0x0,0x0,0x0);
 			i2c_send(vibrador2,0x0,0x0,0x0);
-			i2c_vibrador (vibrador1, 0x00);
+			//i2c_vibrador (vibrador1, 0x00);
 
 		}
 

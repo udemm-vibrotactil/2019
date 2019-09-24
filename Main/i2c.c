@@ -69,6 +69,7 @@ int DRVwriteRegister8 (char reg, char val)
 {
 	int deviceHandle;
 	int readBytes;
+	char buffer_drv[2];
 
 	// address of i2c DRV2605 device
 	int deviceI2CAddress = DRV2605;  // (0x5A)
@@ -87,12 +88,15 @@ int DRVwriteRegister8 (char reg, char val)
 
 	// begin transmission and request acknowledgement
 
-	readBytes=write(deviceHandle, &reg,1);
-	readBytes=write(deviceHandle, &val,1);
-	
+	buffer_drv[0] = reg;
+	buffer_drv[1] = val;
+	//readBytes=write(deviceHandle, &reg,1);
+	//readBytes=write(deviceHandle, &val,1);
+	readBytes=write(deviceHandle, buffer_drv,2);	
 
 	// close connection and return
 	close(deviceHandle);
+	printf("DRV reg: %x val: %x\n", reg, val); 
 	return 0;
 }
 
@@ -125,32 +129,56 @@ int tcaselect (char i)
 
 	// close connection and return
 	close(deviceHandle);
+	printf("MUX %x\n",i);
 	return 0;
 }
 
 int i2c_vibrador (char vibrador, char modo) {
 	tcaselect(vibrador);
+	sleep(0.01);
 	DRVwriteRegister8(0x0C, modo);      //0x0C => drv.go() ---> Manejo ARRANQUE 1 PARADA 0
+	return 0;
 }
 
 void init_DRV2605 () {
+
+for (int t=0; t<7; t++) {
+      	tcaselect(t);
 	DRVwriteRegister8(0x01, 0x00);      //drv.begin()
+	sleep(0.01);
 	DRVwriteRegister8(0x02, 0x00);      //drv.begin()
+	sleep(0.01);
 	DRVwriteRegister8(0x03, 0x06);      //drv.begin()   useLibrary(6)
+	sleep(0.01);
 	DRVwriteRegister8(0x04, 0x01);      //drv.begin()
+	sleep(0.01);
 	DRVwriteRegister8(0x05, 0x00);      //drv.begin()
-      DRVwriteRegister8(0x0D, 0x00);      //drv.begin()
-      DRVwriteRegister8(0x0E, 0x00);      //drv.begin()
-      DRVwriteRegister8(0x0F, 0x00);      //drv.begin()
-      DRVwriteRegister8(0x10, 0x00);      //drv.begin()
-      DRVwriteRegister8(0x13, 0x64);      //drv.begin()
-      DRVwriteRegister8(0x1A, 0xB6);      //drv.begin()   useLRA()
-      DRVwriteRegister8(0x1D, 0xA0);      //drv.begin()
-      //BUZZ 100% waveform  47  0x2F
-      //BUZZ 80% waveform   48  0x30
-      //BUZZ 60% waveform   49  0x31
-      //BUZZ 40% waveform   50  0x32
-      //BUZZ 20% waveform   51  0x33
-      DRVwriteRegister8(0x04, 0x30);      //drv.setWaveform:0,x
-      DRVwriteRegister8(0x05, 0x00);      //drv.setWaveform:1,0   
+	sleep(0.01);
+      	DRVwriteRegister8(0x0D, 0x00);      //drv.begin()
+	sleep(0.01);
+	DRVwriteRegister8(0x0E, 0x00);      //drv.begin()
+	sleep(0.01);
+	DRVwriteRegister8(0x0F, 0x00);      //drv.begin()
+	sleep(0.01);
+	DRVwriteRegister8(0x10, 0x00);      //drv.begin()
+	sleep(0.01);
+	DRVwriteRegister8(0x13, 0x64);      //drv.begin()
+	sleep(0.01);
+	DRVwriteRegister8(0x1A, 0xB6);      //drv.begin()   useLRA()
+	sleep(0.01);
+	DRVwriteRegister8(0x1D, 0xA0);      //drv.begin()
+      	//BUZZ 100% waveform  47  0x2F
+      	//BUZZ 80% waveform   48  0x30
+      	//BUZZ 60% waveform   49  0x31
+      	//BUZZ 40% waveform   50  0x32
+      	//BUZZ 20% waveform   51  0x33
+	//STRONG CLICK 1 100% 17  0x11
+	//STRONG CLICK 2 80%  18  0x12
+	//STRONG CLICK 3 60%  19  0x13
+	//STRONG CLICK 4 30%  20  0x14
+	sleep(0.01);
+	DRVwriteRegister8(0x04, 0x12);      //drv.setWaveform:0,x
+	sleep(0.01);
+	DRVwriteRegister8(0x05, 0x00);      //drv.setWaveform:1,0
+	} 
 }
