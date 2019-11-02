@@ -12,5 +12,6 @@ int i2c_send(char led, char R, char G, char B); //Utilizada en la funcion Main
 void i2c_command(char command); //Utilizada por el i2c_send
 int tcaselect (char i);
 int DRVwriteRegister (char reg, char val);
+int i2c_vibrador (char vibrador, char modo);
 
 #endif
