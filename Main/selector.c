@@ -20,35 +20,35 @@ char selector_F1 (int freq) {
 	  #ifdef DEBUG
 		printf ("F1 - SubCanal 1 Detectado - Frecuencia=%d Hz \n",freq);
 	  #endif
-      	  result = 0x1;
+      	  result = 0x0;
 	  break;
     	case 400 ... 599:
       	/* SubCanal 2 - 400 Hz a 599 Hz */
       	  #ifdef DEBUG
 		printf ("F1 - SubCanal 2 Detectado - Frecuencia=%d Hz \n",freq);
 	  #endif
-	  result = 0x2;
+	  result = 0x1;
 	  break;
 	case 600 ... 799:
       	/* SubCanal 3 - 600 Hz a 799 Hz */
       	  #ifdef DEBUG
 		printf ("F1 - SubCanal 3 Detectado - Frecuencia=%d Hz \n",freq);
 	  #endif
-	  result = 0x3;
+	  result = 0x2;
 	  break;
 	case 800 ... 1199:
       	/* SubCanal 4 - 800 Hz a 1199 Hz */
       	  #ifdef DEBUG
 		printf ("F1 - SubCanal 4 Detectado - Frecuencia=%d Hz \n",freq);
 	  #endif
-	  result = 0x4;
+	  result = 0x3;
 	  break;
 	default:
 	  /* No hay coincidencia de frecuencia */
 	  #ifdef DEBUG
 		printf ("No hay coincidencia - Frecuencia=%d Hz \n",freq);
 	  #endif
-	  result = 0x0;
+	  result = 0xFF;
 	  break;
 	}
 
@@ -67,28 +67,28 @@ char selector_F2 (int freq) {
       	  #ifdef DEBUG
 		printf ("F2 - SubCanal 5 Detectado - Frecuencia=%d Hz \n",freq);
 	  #endif
-	  result = 0x5;
+	  result = 0x4;
 	  break;
 	case 1600 ... 2999:
       	/* SubCanal 6 - 1600 Hz a 2999 Hz */
       	  #ifdef DEBUG
 		printf ("F2 - SubCanal 6 Detectado - Frecuencia=%d Hz \n",freq);
 	  #endif
-	  result = 0x6;
+	  result = 0x5;
 	  break;
 	case 3000 ... 7000:
       	/* SubCanal 7 - 3000 Hz a 7000 Hz*/
       	  #ifdef DEBUG
 		printf ("F2 - SubCanal 7 Detectado - Frecuencia=%d Hz \n",freq);
 	  #endif
-	  result = 0x7;
+	  result = 0x6;
 	  break;
 	default:
 	  /* No hay coincidencia de frecuencia */
 	  #ifdef DEBUG
 		printf ("No hay coincidencia - Frecuencia=%d Hz \n",freq);
 	  #endif
-	  result = 0x0;
+	  result = 0xFF;
 	  break;
 	}
 
