@@ -65,7 +65,7 @@ int i2c_send (char numled, char R, char G, char B)
 	return 0;
 }
 
-int DRVwriteRegister (char reg, char val)
+int DRVwriteRegister8 (char reg, char val)
 {
 	int deviceHandle;
 	int readBytes;
