@@ -132,3 +132,25 @@ int i2c_vibrador (char vibrador, char modo) {
 	tcaselect(vibrador);
 	DRVwriteRegister8(0x0C, modo);      //0x0C => drv.go() ---> Manejo ARRANQUE 1 PARADA 0
 }
+
+int init_DRV2605 () {
+	DRVwriteRegister8(0x01, 0x00);      //drv.begin()
+	DRVwriteRegister8(0x02, 0x00);      //drv.begin()
+	DRVwriteRegister8(0x03, 0x06);      //drv.begin()   useLibrary(6)
+	DRVwriteRegister8(0x04, 0x01);      //drv.begin()
+	DRVwriteRegister8(0x05, 0x00);      //drv.begin()
+      DRVwriteRegister8(0x0D, 0x00);      //drv.begin()
+      DRVwriteRegister8(0x0E, 0x00);      //drv.begin()
+      DRVwriteRegister8(0x0F, 0x00);      //drv.begin()
+      DRVwriteRegister8(0x10, 0x00);      //drv.begin()
+      DRVwriteRegister8(0x13, 0x64);      //drv.begin()
+      DRVwriteRegister8(0x1A, 0xB6);      //drv.begin()   useLRA()
+      DRVwriteRegister8(0x1D, 0xA0);      //drv.begin()
+      //BUZZ 100% waveform  47  0x2F
+      //BUZZ 80% waveform   48  0x30
+      //BUZZ 60% waveform   49  0x31
+      //BUZZ 40% waveform   50  0x32
+      //BUZZ 20% waveform   51  0x33
+      DRVwriteRegister8(0x04, 0x30);      //drv.setWaveform:0,x
+      DRVwriteRegister8(0x05, 0x00);      //drv.setWaveform:1,0   
+}
