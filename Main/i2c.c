@@ -11,7 +11,7 @@
 #include "i2c.h"
 #define ATTINY 0x0A  //ATTiny85 
 #define DRV2605 0x5A //Vibrador
-#define TCADDR 0x70 // Multiplexor
+#define TCAADDR 0x70 // Multiplexor
 //char buffer[7];
 
 int i2c_send (char numled, char R, char G, char B)
@@ -71,7 +71,7 @@ int DRVwriteRegister (char reg, char val)
 	int readBytes;
 
 	// address of i2c DRV2605 device
-	int deviceI2CAddress = DRV2605_ADDR;  // (0x5A)
+	int deviceI2CAddress = DRV2605;  // (0x5A)
 
 	// open device on /dev/i2c-0
 	if ((deviceHandle = open("/dev/i2c-0", O_RDWR)) < 0) {
@@ -98,7 +98,7 @@ int DRVwriteRegister (char reg, char val)
 
 int tcaselect (char i)
 {
-	if (i > 7) return;
+	if (i > 7) return 1;
 	int deviceHandle;
 	int readBytes;
 
@@ -120,7 +120,7 @@ int tcaselect (char i)
 	i = 1 << i;
 	// begin transmission and request acknowledgement
 
-	readBytes=write(deviceHandle, &i);
+	readBytes=write(deviceHandle, &i,1);
 	
 
 	// close connection and return
