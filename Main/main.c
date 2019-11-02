@@ -101,10 +101,13 @@ int main() {
 		exit(1);
 	}
 
-	//Apago leds para indicar que se enceuntra listo
+	
+	//Apago leds y DRV2605 para indicar que se enceuntra listo
+	init_DRV2605 ();
 	i2c_send(vibrador1,0x0,0x0,0x0);
 	i2c_send(vibrador2,0x0,0x0,0x0);
-
+	
+	
 	printf("---> Inicio del programa <--- \n");
 
 	//Bucle infinito - Comienzo del procesamiento
