@@ -192,7 +192,7 @@ int main() {
 			//envio OFF
 			i2c_send(vibrador1,0x0,0x0,0x0);
 			i2c_send(vibrador2,0x0,0x0,0x0);
-			i2c_vibrador (vibrado1r, 0x00);
+			i2c_vibrador (vibrador1, 0x00);
 
 		}
 
