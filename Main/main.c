@@ -172,12 +172,12 @@ int main() {
 			printf("F0 %.2f Hz - F1 CH %x - F2 CH %x - T %.3f seg \n",pitch,vibrador1,vibrador2,periodo);
 
 			//Solo puede existir 2 vibradores activos al mismo tiempo
-			if (vibrador1 != 0x0){
+			if (vibrador1 != 0xFF){
 				//envio F1 ON
 				i2c_send(vibrador1,0xFF,0xFF,0x0);
 			}
 
-			if (vibrador2 != 0x0){
+			if (vibrador2 != 0xFF){
 				//envio F2 ON
 				i2c_send(vibrador2,0x0,0xFF,0x0);
 			}
