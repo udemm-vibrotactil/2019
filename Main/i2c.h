@@ -13,5 +13,6 @@ void i2c_command(char command); //Utilizada por el i2c_send
 int tcaselect (char i);
 int DRVwriteRegister (char reg, char val);
 int i2c_vibrador (char vibrador, char modo);
+void init_DRV2605 ();
 
 #endif
