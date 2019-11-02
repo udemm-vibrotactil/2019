@@ -133,7 +133,7 @@ int i2c_vibrador (char vibrador, char modo) {
 	DRVwriteRegister8(0x0C, modo);      //0x0C => drv.go() ---> Manejo ARRANQUE 1 PARADA 0
 }
 
-int init_DRV2605 () {
+void init_DRV2605 () {
 	DRVwriteRegister8(0x01, 0x00);      //drv.begin()
 	DRVwriteRegister8(0x02, 0x00);      //drv.begin()
 	DRVwriteRegister8(0x03, 0x06);      //drv.begin()   useLibrary(6)
