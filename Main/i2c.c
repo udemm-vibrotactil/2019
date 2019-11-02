@@ -9,7 +9,9 @@
 */
 
 #include "i2c.h"
-#define ATTINY 0x0A 
+#define ATTINY 0x0A  //ATTiny85 
+#define DRV2605 0x5A //Vibrador
+#define TCADDR 0x70 // Multiplexor
 //char buffer[7];
 
 int i2c_send (char numled, char R, char G, char B)
@@ -63,5 +65,66 @@ int i2c_send (char numled, char R, char G, char B)
 	return 0;
 }
 
+int DRVwriteRegister (char reg, char val)
+{
+	int deviceHandle;
+	int readBytes;
 
+	// address of i2c DRV2605 device
+	int deviceI2CAddress = DRV2605_ADDR;  // (0x5A)
+
+	// open device on /dev/i2c-0
+	if ((deviceHandle = open("/dev/i2c-0", O_RDWR)) < 0) {
+		printf("Error: Couldn't open device! %d\n", deviceHandle);
+		return 1;
+	}
+
+	// connect to DRV2605 as i2c slave
+	if (ioctl(deviceHandle, I2C_SLAVE, deviceI2CAddress) < 0) {
+		printf("Error: Couldn't find DRV2605 on address!\n");
+		return 1;
+	} 
+
+	// begin transmission and request acknowledgement
+
+	readBytes=write(deviceHandle, &reg,1);
+	readBytes=write(deviceHandle, &val,1);
+	
+
+	// close connection and return
+	close(deviceHandle);
+	return 0;
+}
+
+int tcaselect (char i)
+{
+	if (i > 7) return;
+	int deviceHandle;
+	int readBytes;
+
+	// address of i2c MUX device
+	int deviceI2CAddress = TCAADDR;  // (0x70)
+
+	// open device on /dev/i2c-0
+	if ((deviceHandle = open("/dev/i2c-0", O_RDWR)) < 0) {
+		printf("Error: Couldn't open device! %d\n", deviceHandle);
+		return 1;
+	}
+
+	// connect to MUX as i2c slave
+	if (ioctl(deviceHandle, I2C_SLAVE, deviceI2CAddress) < 0) {
+		printf("Error: Couldn't find MUX on address!\n");
+		return 1;
+	} 
+	
+	i = 1 << i;
+	// begin transmission and request acknowledgement
+
+	readBytes=write(deviceHandle, &i);
+	
+
+	// close connection and return
+	close(deviceHandle);
+	return 0;
+}
 
