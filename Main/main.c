@@ -175,6 +175,7 @@ int main() {
 			if (vibrador1 != 0xFF){
 				//envio F1 ON
 				i2c_send(vibrador1,0xFF,0xFF,0x0);
+				i2c_vibrador (char vibrador1, char 0x01);
 			}
 
 			if (vibrador2 != 0xFF){
@@ -188,6 +189,7 @@ int main() {
 			//envio OFF
 			i2c_send(vibrador1,0x0,0x0,0x0);
 			i2c_send(vibrador2,0x0,0x0,0x0);
+			i2c_vibrador (char vibrado1r, char 0x00);
 
 		}
 
