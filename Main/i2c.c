@@ -128,3 +128,7 @@ int tcaselect (char i)
 	return 0;
 }
 
+int i2c_vibrador (char vibrador, char modo) {
+	tcaselect(vibrador);
+	DRVwriteRegister8(0x0C, modo);      //0x0C => drv.go() ---> Manejo ARRANQUE 1 PARADA 0
+}
