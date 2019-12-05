@@ -4,7 +4,6 @@
 //Frecuencia analisis de 100 Hz a 7000 Hz
 //Conformado por 7 SubCanales (4 primeros al canal F1 y 3 ultimos al canal F2)
 
-//DRV2605L is 0x5A (7-bit), or 1011010 in binary.
 
 #include "selector.h"
 

@@ -126,7 +126,7 @@ int main() {
 
 	if ((nread = snd_pcm_readi (capture_handle, buf0, AUDIO_BUF_SIZE)) < 0) {
 	      fprintf (stderr, "Falla de lectura desde la interfaz de audio (%s)\n",snd_strerror (err));
-	      /* recover */
+	      /* En caso de erro, recupero el flujo de audio */
 	      snd_pcm_prepare(capture_handle);
 	    } else {
 
@@ -157,7 +157,7 @@ int main() {
 				/* Canal F2 */
 				vibrador2 = selector_F2(find_max_F2(cx_out, AUDIO_BUF_SIZE, SAMPLING_FREQ)); //Hallo la frecuencia de mayor amplitud y selecciono el vibrador a activar
 			}
-			//Glottal Rate Detector (algoritmo de correlacion Yin)
+ 				/* Glottal Rate Detector (algoritmo de correlacion Yin) */
 			 #pragma omp section
                         {
 		 	        pitch = Yin_getPitch(&yin, buf2); //Devuelve la frec fundamental
@@ -218,7 +218,7 @@ int main() {
 		printf ("Demora Proceso %f ms \n",(1000*(float)t)/CLOCKS_PER_SEC);
 	#endif
 
-	}
+	}//Fin Bucle Infinito For
 
 
 //Liberacion de recursos

@@ -22,6 +22,7 @@
 static volatile int encoderPos;
 static volatile int lastEncoded;
 static volatile int encoded;
+int indicador_vibrador = 2;
 volatile int inCriticalSection = FALSE;
 
 volatile int set_mode=FALSE;
@@ -69,9 +70,6 @@ int sensibilidad(){
   int pos = 125;
   long min, max;
   long gpiodelay_value = 100;
-  //int max_indicador=7;
-  //int min_indicador=0;
-  //int indicador = 5;
 
   snd_mixer_t *handle;
   snd_mixer_selem_id_t *sid;
@@ -83,21 +81,21 @@ int sensibilidad(){
 
   encoderPos = pos;
 
-   // Setup ALSA access
-   snd_mixer_open(&handle, 0);
-   snd_mixer_attach(handle, card);
-   snd_mixer_selem_register(handle, NULL, NULL);
-   snd_mixer_load(handle);
+  // Setup ALSA access
+  snd_mixer_open(&handle, 0);
+  snd_mixer_attach(handle, card);
+  snd_mixer_selem_register(handle, NULL, NULL);
+  snd_mixer_load(handle);
 
-   snd_mixer_selem_id_alloca(&sid);
-   snd_mixer_selem_id_set_index(sid, 0);
-   snd_mixer_selem_id_set_name(sid, selem_name);
-   snd_mixer_elem_t* elem = snd_mixer_find_selem(handle, sid);
+  snd_mixer_selem_id_alloca(&sid);
+  snd_mixer_selem_id_set_index(sid, 0);
+  snd_mixer_selem_id_set_name(sid, selem_name);
+  snd_mixer_elem_t* elem = snd_mixer_find_selem(handle, sid);
 
-   snd_mixer_selem_get_capture_volume_range(elem, &min, &max);
-   #ifdef DEBUG
+  snd_mixer_selem_get_capture_volume_range(elem, &min, &max);
+  #ifdef DEBUG
 	printf("Returned card VOLUME range - min: %ld, max: %ld\n", min, max);
-   #endif
+  #endif
 
    // Minimum given is mute, we need the first real value
    min++;
@@ -149,14 +147,14 @@ int sensibilidad(){
 	//	      else if (DEBUG_PRINT) printf(" Current ALSA volume: %ld\n", currentVolume);
 
               // Adjust for MUTE
-		      if (currentVolume < min) 
+		      if (currentVolume < min)
         	      {
                         currentVolume = 0;
 			#ifdef DEBUG
 				printf(" Current ALSA volume set to min: %ld\n", currentVolume);
 			#endif
 		       // i2c_luzoff();
-	   	   i2c_send(0,0x0,0x0,0x0);
+		   	 i2c_send(0,0x0,0x0,0x0);
 
 	              }
 
@@ -167,27 +165,21 @@ int sensibilidad(){
 			 currentVolume = currentVolume + 1;
 			 //indicador=indicador+1;
 			 // Adjust for MAX volume
-			 if (currentVolume > max) currentVolume = max;
-			// if (indicador > max_indicador) indicador = max_indicador;
+			if (currentVolume > max) currentVolume = max;
 			#ifdef DEBUG
 				printf("Volume UP %d - %ld", pos, currentVolume);
 			#endif
-			for(int j=0;j<(currentVolume);j++){
+			for(int j=0;j<currentVolume;j++){
 			   	   i2c_send(j,0x0,0x0,0xFF);
 			}
-
-		        //i2c_send(indicador-1,0x0,0x0,0xFF);
 
 		      }
 			else if (encoderPos < pos)
 		      {
 		         pos = encoderPos;
                          currentVolume = currentVolume - 1;
-			 //indicador=indicador - 1; 
-
 			 // Adjust for MUTE
 			 if (currentVolume < min) currentVolume = 0;
- 			 //if (indicador < min_indicador) indicador = 0;
 			 for(int j=7;j>currentVolume;j--){
 			   	   i2c_send(j,0x0,0x0,0x0);
 			 }
@@ -223,25 +215,16 @@ int intensidad(){
   clock_t tmode_start;
   clock_t tmode_end;
   int pos = 125;
-//  long min, max;
   long gpiodelay_value = 100;
   int max_indicador=4;
   int min_indicador=0;
-  int indicador = 2;
-
-//  int x;
-//  long currentVolume;
 
   encoderPos = pos;
 
-
-   // Minimum given is mute, we need the first real value
-  // min++;
-
-
    //Muestro en los leds el estado por default 
    i2c_luzoff();
-	for(int j=0;j<indicador;j++){
+	for(int j=0;j<=indicador_vibrador;j++){
+//	printf("pos vibrador %i \n", indicador_vibrador);
    	   i2c_send(j,0xFF,0x0,0x0);
 	}
 
@@ -266,11 +249,11 @@ int intensidad(){
 		      {
 		         pos = encoderPos;
 		//	 currentVibrator = currentVibrator + 1;
-			 indicador=indicador+1;
+			 indicador_vibrador=indicador_vibrador+1;
 			 // Adjust for MAX volume
 		//	 if (currentVolume > max) currentVolume = max;
-			 if (indicador > max_indicador) indicador = max_indicador;
-			   for(int j=0;j<=indicador;j++){
+			 if (indicador_vibrador > max_indicador) indicador_vibrador = max_indicador;
+			   for(int j=0;j<=indicador_vibrador;j++){
    	   			i2c_send(j,0xFF,0x0,0x0);
 				}
 
@@ -278,13 +261,11 @@ int intensidad(){
 			else if (encoderPos < pos)
 		      {
 		         pos = encoderPos;
-                  //       currentVolume = currentVolume - 1;
-			 indicador=indicador - 1; 
+			 indicador_vibrador=indicador_vibrador - 1; 
 
 			 // Adjust for MUTE
-		//	 if (currentVolume < min) currentVolume = 0;
- 			 if (indicador < min_indicador) indicador = 0;
-			 for(int j=4;j>indicador;j--){
+ 			 if (indicador_vibrador < min_indicador) indicador_vibrador = 1;
+			 for(int j=4;j>indicador_vibrador;j--){
 			   	   i2c_send(j,0x0,0x0,0x0);
 			 }
 		      }
@@ -296,8 +277,7 @@ int intensidad(){
 
 
    set_mode2=FALSE;
-//   set_mode=FALSE;
-//   i2c_luzoff();
+   set_efecto(indicador_vibrador);
    return 0;
 }
 

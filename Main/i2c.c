@@ -12,7 +12,15 @@
 #define ATTINY 0x0A  //ATTiny85 
 #define DRV2605 0x5A //Vibrador
 #define TCAADDR 0x70 // Multiplexor
-//char buffer[7];
+#define EFECTO 4 //Efecto por default, posicion del array
+
+//Efectos del vibrador disponibles:
+//STRONG BUZZ 100%    14  0x0E - Nivel 5
+//STRONG CLICK 1 100% 17  0x11 - Nivel 4
+//STRONG CLICK 2 80%  18  0x12 - Nivel 3 (Default)
+//STRONG CLICK 3 60%  19  0x13 - Nivel 2
+//STRONG CLICK 4 30%  20  0x14 - Nivel 1
+char vibrador_efecto[5] = {0x14,0x13,0x12,0x11,0x0E};
 
 int i2c_send (char numled, char R, char G, char B){
 	int deviceHandle;
@@ -70,6 +78,7 @@ void i2c_luzoff (){
 		i2c_send (i,0x0,0x0,0x0);
 	}
 }
+
 int DRVwriteRegister8 (char reg, char val){
 	int deviceHandle;
 //	int readBytes;
@@ -181,8 +190,20 @@ for (int t=0; t<7; t++) {
 	//STRONG CLICK 3 60%  19  0x13
 	//STRONG CLICK 4 30%  20  0x14
 	sleep(0.01);
-	DRVwriteRegister8(0x04, 0x12);      //drv.setWaveform:0,x
+	DRVwriteRegister8(0x04, vibrador_efecto[EFECTO]);      //drv.setWaveform:0,x
 	sleep(0.01);
 	DRVwriteRegister8(0x05, 0x00);      //drv.setWaveform:1,0
 	} 
+}
+
+void set_efecto(int num_effect){
+	printf("numer array %x \n",vibrador_efecto[num_effect]);
+	printf("num_effect %i \n",num_effect);
+
+	for (int t=0; t<7; t++) {
+		tcaselect(t);
+		DRVwriteRegister8(0x04, vibrador_efecto[num_effect]);      //drv.setWaveform:0,x
+		sleep(0.01);
+	}
+
 }
