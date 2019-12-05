@@ -14,6 +14,7 @@ entrada5="selector.c"
 entrada6="kiss_fft.c"
 entrada7="i2c.c"
 entrada8="alsa.c"
+entrada9="encoder.c"
 
 #echo -e "Modo debug [S/N]?"
 read -p "Modo debug [S/N]?:" modo_debug
@@ -29,7 +30,7 @@ fi
 
 #gcc -O3 $entrada1 $entrada2 $entrada3 $entrada4 $entrada5 $entrada6 -Wall -o $salida -lpulse -lstdc++ -lpulse-simple -lm -fopenmp
 #gcc -O3 $entrada1 $entrada2 $entrada3 $entrada4 $entrada5 $entrada6 $entrada7 $debug1 -Wall -o $salida -lpulse -lstdc++ -lpulse-simple -lm -fopenmp 
-gcc -mcpu=cortex-a53 -mtune=cortex-a53 -O3 $entrada1 $entrada2 $entrada3 $entrada4 $entrada5 $entrada6 $entrada7 $entrada8 $debug1 -Wall -o $salida -lstdc++ -lasound -lm -fopenmp
+gcc -mcpu=cortex-a53 -mtune=cortex-a53 -O3 $entrada1 $entrada2 $entrada3 $entrada4 $entrada5 $entrada6 $entrada7 $entrada8 $entrada9 $debug1 -Wall -o $salida -lstdc++ -lasound -lm -fopenmp -lwiringPi
 #gcc $entrada1 $entrada2 $entrada3 $entrada5 $entrada6 $entrada7 $debug1 -Wall -o $salida -lpulse -lstdc++ -lpulse-simple -lm 
 #-ffast-math
 #gcc $entrada1 $entrada2 $entrada3 $entrada5 -o $salida -lpulse -lstdc++ -lpulse-simple -lm -fopenmp

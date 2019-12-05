@@ -17,7 +17,7 @@
 int i2c_send (char numled, char R, char G, char B)
 {
 	int deviceHandle;
-	int readBytes;
+//	int readBytes;
 
 	// initialize buffer
 	//buffer[0] = 0x00;
@@ -39,10 +39,11 @@ int i2c_send (char numled, char R, char G, char B)
 
 	// begin transmission and request acknowledgement
 
-	readBytes=write(deviceHandle, &numled,1);
-	readBytes=write(deviceHandle, &R,1);
-	readBytes=write(deviceHandle, &G,1);
-	readBytes=write(deviceHandle, &B,1);
+//	readBytes=
+	write(deviceHandle, &numled,1);
+	write(deviceHandle, &R,1);
+	write(deviceHandle, &G,1);
+	write(deviceHandle, &B,1);
 
 /*
 	readBytes = write(deviceHandle, buffer, 1);
@@ -68,7 +69,7 @@ int i2c_send (char numled, char R, char G, char B)
 int DRVwriteRegister8 (char reg, char val)
 {
 	int deviceHandle;
-	int readBytes;
+//	int readBytes;
 	char buffer_drv[2];
 
 	// address of i2c DRV2605 device
@@ -92,7 +93,7 @@ int DRVwriteRegister8 (char reg, char val)
 	buffer_drv[1] = val;
 	//readBytes=write(deviceHandle, &reg,1);
 	//readBytes=write(deviceHandle, &val,1);
-	readBytes=write(deviceHandle, buffer_drv,2);	
+	write(deviceHandle, buffer_drv,2);	
 
 	// close connection and return
 	close(deviceHandle);
@@ -104,7 +105,7 @@ int tcaselect (char i)
 {
 	if (i > 7) return 1;
 	int deviceHandle;
-	int readBytes;
+//	int readBytes;
 
 	// address of i2c MUX device
 	int deviceI2CAddress = TCAADDR;  // (0x70)
@@ -124,7 +125,7 @@ int tcaselect (char i)
 	i = 1 << i;
 	// begin transmission and request acknowledgement
 
-	readBytes=write(deviceHandle, &i,1);
+	write(deviceHandle, &i,1);
 	
 
 	// close connection and return

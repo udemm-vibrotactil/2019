@@ -29,6 +29,7 @@ Version 1.0
 #include "i2c.h"
 #include "fft.h"
 #include "alsa.h"
+#include "encoder.h"
 
 //Definicion de constantes
 #define AUDIO_BUF_SIZE 1024 //Defino la cantidad de samples a procesar
@@ -39,7 +40,6 @@ Version 1.0
 #define PI 3.14159265359 //Cte Para la ventana de Hamming
 #define a0 0.53836 //Cte Para la ventana de Hamming
 #define a1 0.46164 //Cte Para la ventana de Hamming
-
 
 /* Funcion Principal */
 int main() {
@@ -101,14 +101,21 @@ int main() {
 		exit(1);
 	}
 
-	
-	//Apago leds y DRV2605 para indicar que se enceuntra listo
+
+	//Apago leds y DRV2605 para indicar que se encuentra listo para el procesamiento
 	init_DRV2605 ();
 	sleep(0.001);
-	i2c_send(vibrador1,0x0,0x0,0x0);
-	i2c_send(vibrador2,0x0,0x0,0x0);
-	
-	
+	i2c_send(0,0x0,0x0,0x0);
+	i2c_send(1,0x0,0x0,0x0);
+	i2c_send(2,0x0,0x0,0x0);
+	i2c_send(3,0x0,0x0,0x0);
+	i2c_send(4,0x0,0x0,0x0);
+	i2c_send(5,0x0,0x0,0x0);
+	i2c_send(6,0x0,0x0,0x0);
+	i2c_send(7,0x0,0x0,0x0);
+
+	config_encoder(); //Configuro el Encoder
+
 	printf("---> Inicio del programa <--- \n");
 
 	//Bucle infinito - Comienzo del procesamiento
@@ -117,7 +124,9 @@ int main() {
 			t = clock(); //Comienzo a medir tiempo del bucle
 		#endif
 	t1 = clock(); //Comienzo a medir tiempo del bucle
-
+	if (set_mode==1) {
+		sensibilidad();
+	}
     	/* Lectura de SAMPLES y los almaceno en el array buf0 */
 
 	if ((nread = snd_pcm_readi (capture_handle, buf0, AUDIO_BUF_SIZE)) < 0) {
