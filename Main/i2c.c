@@ -105,11 +105,13 @@ int DRVwriteRegister8 (char reg, char val){
 	buffer_drv[1] = val;
 	//readBytes=write(deviceHandle, &reg,1);
 	//readBytes=write(deviceHandle, &val,1);
-	write(deviceHandle, buffer_drv,2);	
+	write(deviceHandle, buffer_drv,2);
 
 	// Cierro la conexion
 	close(deviceHandle);
-	printf("DRV reg: %x val: %x\n", reg, val); 
+	#ifdef VERBOSE
+		printf("DRV reg: %x val: %x\n", reg, val);
+	#endif
 	return 0;
 }
 
@@ -132,17 +134,17 @@ int tcaselect (char i)
 	if (ioctl(deviceHandle, I2C_SLAVE, deviceI2CAddress) < 0) {
 		printf("Error: Couldn't find MUX on address!\n");
 		return 1;
-	} 
-	
+	}
 	i = 1 << i;
 	// begin transmission and request acknowledgement
 
 	write(deviceHandle, &i,1);
-	
 
 	// close connection and return
 	close(deviceHandle);
+	#ifdef VERBOSE
 	printf("MUX %x\n",i);
+	#endif
 	return 0;
 }
 
@@ -180,15 +182,6 @@ for (int t=0; t<7; t++) {
 	DRVwriteRegister8(0x1A, 0xB6);      //drv.begin()   useLRA()
 	sleep(0.01);
 	DRVwriteRegister8(0x1D, 0xA0);      //drv.begin()
-      	//BUZZ 100% waveform  47  0x2F
-      	//BUZZ 80% waveform   48  0x30
-      	//BUZZ 60% waveform   49  0x31
-      	//BUZZ 40% waveform   50  0x32
-      	//BUZZ 20% waveform   51  0x33
-	//STRONG CLICK 1 100% 17  0x11
-	//STRONG CLICK 2 80%  18  0x12
-	//STRONG CLICK 3 60%  19  0x13
-	//STRONG CLICK 4 30%  20  0x14
 	sleep(0.01);
 	DRVwriteRegister8(0x04, vibrador_efecto[EFECTO]);      //drv.setWaveform:0,x
 	sleep(0.01);
@@ -197,13 +190,9 @@ for (int t=0; t<7; t++) {
 }
 
 void set_efecto(int num_effect){
-	printf("numer array %x \n",vibrador_efecto[num_effect]);
-	printf("num_effect %i \n",num_effect);
-
 	for (int t=0; t<7; t++) {
 		tcaselect(t);
 		DRVwriteRegister8(0x04, vibrador_efecto[num_effect]);      //drv.setWaveform:0,x
 		sleep(0.01);
 	}
-
 }

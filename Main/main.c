@@ -59,8 +59,10 @@ int main() {
 	float periodo=0; //Almacena el periodo glotal (1/F0)
 	clock_t t1; //Almacena el tiempo en ejecutar cada blucle
 
-	int j =0;
-	char spinner[4]={'/','-','|','\0'};
+	#ifdef VERBOSE
+		int j =0;
+		char spinner[4]={'/','-','|','\0'};
+	#endif
 
 	#ifdef DEBUG
 	  clock_t t;
@@ -177,7 +179,9 @@ int main() {
 
 		if (pitch!=-1) {
 			periodo = (float) (1/pitch) * 2;
-			printf("F0 %.2f Hz - F1 CH %x - F2 CH %x - T %.3f seg \n",pitch,vibrador1,vibrador2,periodo);
+		#ifdef VERBOSE
+           		printf("F0 %.2f Hz - F1 CH %x - F2 CH %x - T %.3f seg \n",pitch,vibrador1,vibrador2,periodo);
+		#endif
 
 			//Solo puede existir 2 vibradores activos al mismo tiempo
 			if (vibrador1 != 0xFF){
@@ -203,14 +207,16 @@ int main() {
 		}
 
 	//Animacion de ejcucion mintras no se detecta pulso glotal
-	printf("%c %d  \r",spinner[j],j);
-	if (j<2) {
-		j++;
-	} else {
-		j=0;
-		}
-	}
+	#ifdef VERBOSE
+		printf("%c %d  \r",spinner[j],j);
+		if (j<2) {
+			j++;
+		} else {
+			j=0;
+			}
+	#endif
 
+	}
 
 	//Calculo el tiempo de procesamiento (modo debug)
 	#ifdef DEBUG

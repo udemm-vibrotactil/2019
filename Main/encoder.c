@@ -112,8 +112,9 @@ int sensibilidad(){
         printf("%d %s\n", x, snd_strerror(x));
    }
    //else if (DEBUG_PRINT) printf("Current ALSA volume RIGHT: %ld\n", currentVolume);
-   printf("Current ALSA volume RIGHT: %ld\n", currentVolume);
-
+   #ifdef VERBOSE
+   	printf("Current ALSA volume RIGHT: %ld\n", currentVolume);
+   #endif
    i2c_luzoff();
    //Muestro en los leds en base al estado actual
    for(int j=0;j<currentVolume;j++){
@@ -132,8 +133,9 @@ int sensibilidad(){
 
         tmode_end = clock();
 	time_mode = ((double)(tmode_end - tmode_start)/CLOCKS_PER_SEC)*1000; //+ time_mode;
-	printf("time %f \n", time_mode);
-
+	#ifdef VERBOSE
+		printf("time %f \n", time_mode);
+	#endif
 	if (encoderPos != pos)
 	      {
 		      tmode_start = clock(); // Reseteo el contador de tiempo
@@ -224,10 +226,8 @@ int intensidad(){
    //Muestro en los leds el estado por default 
    i2c_luzoff();
 	for(int j=0;j<=indicador_vibrador;j++){
-//	printf("pos vibrador %i \n", indicador_vibrador);
-   	   i2c_send(j,0xFF,0x0,0x0);
+   	   i2c_send(j,(0x32*(indicador_vibrador+1)),0x0,0x0);
 	}
-
    tmode_start = clock();
 
 // Now sit and spin waiting for GPIO pins to go active...
@@ -236,8 +236,9 @@ int intensidad(){
    {
         tmode_end = clock();
 	time_mode = ((double)(tmode_end - tmode_start)/CLOCKS_PER_SEC)*1000; //+ time_mode;
-	printf("time %f \n", time_mode);
-
+	#ifdef VERBOSE
+		printf("time %f \n", time_mode);
+	#endif
 	if (encoderPos != pos)
 	      {
 		      tmode_start = clock(); // Reseteo el contador de tiempo
@@ -248,13 +249,11 @@ int intensidad(){
 		      if (encoderPos > pos)
 		      {
 		         pos = encoderPos;
-		//	 currentVibrator = currentVibrator + 1;
 			 indicador_vibrador=indicador_vibrador+1;
-			 // Adjust for MAX volume
-		//	 if (currentVolume > max) currentVolume = max;
+			 // Adjust for MAX intensidad
 			 if (indicador_vibrador > max_indicador) indicador_vibrador = max_indicador;
 			   for(int j=0;j<=indicador_vibrador;j++){
-   	   			i2c_send(j,0xFF,0x0,0x0);
+			   	i2c_send(j,(0x32*(indicador_vibrador+1)),0x0,0x0);
 				}
 
 		      }
@@ -263,11 +262,15 @@ int intensidad(){
 		         pos = encoderPos;
 			 indicador_vibrador=indicador_vibrador - 1; 
 
-			 // Adjust for MUTE
+			 // Adjust for MIN intensidad
  			 if (indicador_vibrador < min_indicador) indicador_vibrador = 1;
 			 for(int j=4;j>indicador_vibrador;j--){
 			   	   i2c_send(j,0x0,0x0,0x0);
 			 }
+			 for(int k=0;k<indicador_vibrador;k++){
+			   	i2c_send(k,(0x32*(indicador_vibrador+1)),0x0,0x0);
+			 }
+
 		      }
 		}
 
