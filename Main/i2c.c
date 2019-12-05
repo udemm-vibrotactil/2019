@@ -14,32 +14,31 @@
 #define TCAADDR 0x70 // Multiplexor
 //char buffer[7];
 
-int i2c_send (char numled, char R, char G, char B)
-{
+int i2c_send (char numled, char R, char G, char B){
 	int deviceHandle;
-//	int readBytes;
+	//int readBytes;
 
 	// initialize buffer
 	//buffer[0] = 0x00;
 
-	// address of i2c ATTiny device
-	int deviceI2CAddress = ATTINY;  // (0x2A = 42)
+	// Direccion de i2c del dispositvo ATTiny
+	int deviceI2CAddress = ATTINY;
 
-	// open device on /dev/i2c-0
+	// Abro el dispositivo en /dev/i2c-0
 	if ((deviceHandle = open("/dev/i2c-0", O_RDWR)) < 0) {
-		printf("Error: Couldn't open device! %d\n", deviceHandle);
+		printf("Error: No es posible abrir el dispositivo! %d\n", deviceHandle);
 		return 1;
 	}
 
-	// connect to ATTiny as i2c slave
+	// Conexion al ATTiny como i2c esclavo
 	if (ioctl(deviceHandle, I2C_SLAVE, deviceI2CAddress) < 0) {
-		printf("Error: Couldn't find ATTiny on address!\n");
+		printf("Error: No es posible hallar el ATTiny en la direccion indicada!\n");
 		return 1;
 	} 
 
-	// begin transmission and request acknowledgement
+	// Comienzo la transmicion de datos
 
-//	readBytes=
+	//readBytes=
 	write(deviceHandle, &numled,1);
 	write(deviceHandle, &R,1);
 	write(deviceHandle, &G,1);
@@ -61,13 +60,17 @@ int i2c_send (char numled, char R, char G, char B)
 	}
 */	
 
-	// close connection and return
+	// Cierro la conexion
 	close(deviceHandle);
 	return 0;
 }
 
-int DRVwriteRegister8 (char reg, char val)
-{
+void i2c_luzoff (){
+	for (int i=0;i<8;++i){
+		i2c_send (i,0x0,0x0,0x0);
+	}
+}
+int DRVwriteRegister8 (char reg, char val){
 	int deviceHandle;
 //	int readBytes;
 	char buffer_drv[2];
@@ -83,11 +86,11 @@ int DRVwriteRegister8 (char reg, char val)
 
 	// connect to DRV2605 as i2c slave
 	if (ioctl(deviceHandle, I2C_SLAVE, deviceI2CAddress) < 0) {
-		printf("Error: Couldn't find DRV2605 on address!\n");
+		printf("Error: No es posible hallar el DRV2605 en la direccion indicada!\n");
 		return 1;
-	} 
+	}
 
-	// begin transmission and request acknowledgement
+	// Comienza la transmicion (formato multibyte)
 
 	buffer_drv[0] = reg;
 	buffer_drv[1] = val;
@@ -95,7 +98,7 @@ int DRVwriteRegister8 (char reg, char val)
 	//readBytes=write(deviceHandle, &val,1);
 	write(deviceHandle, buffer_drv,2);	
 
-	// close connection and return
+	// Cierro la conexion
 	close(deviceHandle);
 	printf("DRV reg: %x val: %x\n", reg, val); 
 	return 0;
