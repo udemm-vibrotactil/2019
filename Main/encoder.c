@@ -69,9 +69,9 @@ int sensibilidad(){
   int pos = 125;
   long min, max;
   long gpiodelay_value = 100;
-  int max_indicador=7;
-  int min_indicador=0;
-  int indicador = 5;
+  //int max_indicador=7;
+  //int min_indicador=0;
+  //int indicador = 5;
 
   snd_mixer_t *handle;
   snd_mixer_selem_id_t *sid;
@@ -125,7 +125,7 @@ int sensibilidad(){
 
 // Now sit and spin waiting for GPIO pins to go active...
 // Ver de poner el tiempo de time out para salir
-   while (time_mode < 3)
+   while (time_mode < 1.5)
    {
 	if (set_mode2 == TRUE){
 		 intensidad();
@@ -155,34 +155,44 @@ int sensibilidad(){
 			#ifdef DEBUG
 				printf(" Current ALSA volume set to min: %ld\n", currentVolume);
 			#endif
-		        i2c_luzoff();
+		       // i2c_luzoff();
+	   	   i2c_send(0,0x0,0x0,0x0);
+
 	              }
 
               // What way did the encoder go?
-		      if (encoderPos > pos)
+		     if (encoderPos > pos)
 		      {
 		         pos = encoderPos;
 			 currentVolume = currentVolume + 1;
-			 indicador=indicador+1;
+			 //indicador=indicador+1;
 			 // Adjust for MAX volume
 			 if (currentVolume > max) currentVolume = max;
-			 if (indicador > max_indicador) indicador = max_indicador;
+			// if (indicador > max_indicador) indicador = max_indicador;
 			#ifdef DEBUG
 				printf("Volume UP %d - %ld", pos, currentVolume);
 			#endif
-		        i2c_send(indicador-1,0x0,0x0,0xFF);
+			for(int j=0;j<(currentVolume);j++){
+			   	   i2c_send(j,0x0,0x0,0xFF);
+			}
+
+		        //i2c_send(indicador-1,0x0,0x0,0xFF);
 
 		      }
 			else if (encoderPos < pos)
 		      {
 		         pos = encoderPos;
                          currentVolume = currentVolume - 1;
-			 indicador=indicador - 1; 
+			 //indicador=indicador - 1; 
 
 			 // Adjust for MUTE
 			 if (currentVolume < min) currentVolume = 0;
- 			 if (indicador < min_indicador) indicador = 0;
-			 i2c_send(indicador+1,0x0,0x0,0x0);
+ 			 //if (indicador < min_indicador) indicador = 0;
+			 for(int j=7;j>currentVolume;j--){
+			   	   i2c_send(j,0x0,0x0,0x0);
+			 }
+
+
 
 			 #ifdef DEBUG
 				printf("Volume DOWN %d - %ld", pos, currentVolume);
@@ -230,20 +240,16 @@ int intensidad(){
 
 
    //Muestro en los leds el estado por default 
-   i2c_send(0,0xFF,0x0,0x0);
-   i2c_send(1,0xFF,0x0,0x0);
-   i2c_send(2,0xFF,0x0,0x0);
-   i2c_send(3,0xFF,0x0,0x0);
-   i2c_send(4,0xFF,0x0,0x0);
-   i2c_send(5,0x0,0x0,0x0);
-   i2c_send(6,0x0,0x0,0x0);
-   i2c_send(7,0x0,0x0,0x0);
+   i2c_luzoff();
+	for(int j=0;j<indicador;j++){
+   	   i2c_send(j,0xFF,0x0,0x0);
+	}
 
    tmode_start = clock();
 
 // Now sit and spin waiting for GPIO pins to go active...
 // Ver de poner el tiempo de time out para salir
-   while (time_mode < 3)
+   while (time_mode < 1.5)
    {
         tmode_end = clock();
 	time_mode = ((double)(tmode_end - tmode_start)/CLOCKS_PER_SEC)*1000; //+ time_mode;
@@ -264,7 +270,9 @@ int intensidad(){
 			 // Adjust for MAX volume
 		//	 if (currentVolume > max) currentVolume = max;
 			 if (indicador > max_indicador) indicador = max_indicador;
-		         i2c_send(indicador-1,0xFF,0x0,0x0);
+			   for(int j=0;j<=indicador;j++){
+   	   			i2c_send(j,0xFF,0x0,0x0);
+				}
 
 		      }
 			else if (encoderPos < pos)
@@ -276,8 +284,9 @@ int intensidad(){
 			 // Adjust for MUTE
 		//	 if (currentVolume < min) currentVolume = 0;
  			 if (indicador < min_indicador) indicador = 0;
-			 i2c_send(indicador+1,0x0,0x0,0x0);
-
+			 for(int j=4;j>indicador;j--){
+			   	   i2c_send(j,0x0,0x0,0x0);
+			 }
 		      }
 		}
 
