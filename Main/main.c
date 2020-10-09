@@ -179,7 +179,7 @@ int main() {
 		//Evaluo si hay pulso glotal
 
 		//if (pitch!=-1) {
-			periodo = (float) (1/pitch) * 2;
+		//	periodo = (float) (1/pitch) * 2;
 		#ifdef VERBOSE
            		printf("F0 %.2f Hz - F1 CH %x - F2 CH %x - T %.3f seg \n",pitch,vibrador1,vibrador2,periodo);
 		#endif
@@ -201,7 +201,9 @@ int main() {
 				//Fijo un tiempo si no se detecto Glotal
 				periodo=200;
 			}
-			
+			else{
+				periodo = (float) (1/pitch) * 2;
+			}
 			//Espero el tiempo antes de desactivarlos
 			sleep (perido)
 
