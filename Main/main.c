@@ -1,6 +1,6 @@
 /*
 Proyecto Vibrotact 2019
-seguimiento 2020
+- seguimiento 2020 -
 
 Modulo principal
 ----------------
