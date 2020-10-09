@@ -176,10 +176,7 @@ int main() {
 			sleep(periodo - (t1/CLOCKS_PER_SEC));
 		}
 
-		//Evaluo si hay pulso glotal
-
-		//if (pitch!=-1) {
-		//	periodo = (float) (1/pitch) * 2;
+		
 		#ifdef VERBOSE
            		printf("F0 %.2f Hz - F1 CH %x - F2 CH %x - T %.3f seg \n",pitch,vibrador1,vibrador2,periodo);
 		#endif
@@ -197,6 +194,7 @@ int main() {
 				i2c_vibrador (vibrador2, 0x01);
 			}
 			
+			//Evaluo si no hay pulso glotal
 			if (pitch==-1){
 				//Fijo un tiempo si no se detecto Glotal
 				periodo=200;
@@ -204,6 +202,7 @@ int main() {
 			else{
 				periodo = (float) (1/pitch) * 2;
 			}
+			
 			//Espero el tiempo antes de desactivarlos
 			sleep (perido)
 
