@@ -196,17 +196,21 @@ int main() {
 				i2c_send(vibrador2,0x0,0xFF,0x0);
 				i2c_vibrador (vibrador2, 0x01);
 			}
-		if (pitch!=-1) 
-			{
-			//Espero el tiempo glotal antes de desactivarlos
-			sleep (periodo);
+			
+			if (pitch==-1){
+				//Fijo un tiempo si no se detecto Glotal
+				periodo=200;
+			}
+			
+			//Espero el tiempo antes de desactivarlos
+			sleep (perido)
 
 			//envio OFF
 			i2c_send(vibrador1,0x0,0x0,0x0);
 			i2c_send(vibrador2,0x0,0x0,0x0);
 			//i2c_vibrador (vibrador1, 0x00);
 
-			}
+			
 		
 	//Animacion de ejcucion mintras no se detecta pulso glotal
 	#ifdef VERBOSE
