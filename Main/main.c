@@ -1,6 +1,6 @@
 /*
 Proyecto Vibrotact 2019
-- seguimiento 2020 -
+-- seguimiento 2020 --
 
 Modulo principal
 ----------------
@@ -204,7 +204,7 @@ int main() {
 			}
 			
 			//Espero el tiempo antes de desactivarlos
-			sleep (perido)
+			sleep (periodo);
 
 			//envio OFF
 			i2c_send(vibrador1,0x0,0x0,0x0);
