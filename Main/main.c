@@ -1,6 +1,5 @@
 /*
 Proyecto Vibrotact 2019
--- seguimiento 2020 --
 
 Modulo principal
 ----------------
@@ -176,7 +175,10 @@ int main() {
 			sleep(periodo - (t1/CLOCKS_PER_SEC));
 		}
 
-		
+		//Evaluo si hay pulso glotal
+
+		if (pitch!=-1) {
+			periodo = (float) (1/pitch) * 2;
 		#ifdef VERBOSE
            		printf("F0 %.2f Hz - F1 CH %x - F2 CH %x - T %.3f seg \n",pitch,vibrador1,vibrador2,periodo);
 		#endif
@@ -193,17 +195,8 @@ int main() {
 				i2c_send(vibrador2,0x0,0xFF,0x0);
 				i2c_vibrador (vibrador2, 0x01);
 			}
-			
-			//Evaluo si no hay pulso glotal
-			if (pitch==-1){
-				//Fijo un tiempo si no se detecto Glotal
-				periodo=200;
-			}
-			else{
-				periodo = (float) (1/pitch) * 2;
-			}
-			
-			//Espero el tiempo antes de desactivarlos
+
+			//Espero el tiempo glotal antes de desactivarlos
 			sleep (periodo);
 
 			//envio OFF
@@ -211,8 +204,8 @@ int main() {
 			i2c_send(vibrador2,0x0,0x0,0x0);
 			//i2c_vibrador (vibrador1, 0x00);
 
-			
-		
+		}
+
 	//Animacion de ejcucion mintras no se detecta pulso glotal
 	#ifdef VERBOSE
 		printf("%c %d  \r",spinner[j],j);
